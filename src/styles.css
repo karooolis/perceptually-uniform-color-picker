@@ -1,0 +1,165 @@
+.App {
+  font-family: "Lato", sans-serif;
+  text-align: center;
+}
+
+svg {
+  overflow: visible;
+}
+
+.line1,
+.line2,
+.line3 {
+  fill: none;
+  stroke: black;
+  stroke-width: 2px;
+}
+
+circle {
+  cursor: pointer;
+}
+
+/* .line1,
+.line2 {
+  fill: none;
+  stroke: darkgray;
+  stroke-width: 2px;
+} */
+
+.PickerContainerTop {
+  background: linear-gradient(
+    rgb(0, 0, 0),
+    rgb(134, 181, 74),
+    rgb(243, 248, 237)
+  );
+  width: 300px;
+  height: 300px;
+  cursor: pointer;
+  border-radius: 100%;
+  outline: none;
+  position: relative;
+  -webkit-tap-highlight-color: transparent;
+  will-change: background;
+}
+
+.PickerContainerMiddle {
+  display: inline-block;
+  position: absolute;
+  width: calc(100% - 24px);
+  height: calc(100% - 24px);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  border-radius: 100%;
+  background: #fff;
+}
+
+.PickerContainer {
+  display: inline-block;
+  position: absolute;
+  width: calc(100% - 32px);
+  height: calc(100% - 32px);
+  top: 50%;
+  left: 50%;
+  box-sizing: border-box;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  border-radius: 100%;
+  background: radial-gradient(
+      circle at 50% 0,
+      red,
+      rgba(242, 13, 13, 0.8) 10%,
+      rgba(230, 26, 26, 0.6) 20%,
+      rgba(204, 51, 51, 0.4) 30%,
+      rgba(166, 89, 89, 0.2) 40%,
+      hsla(0, 0%, 50%, 0) 50%
+    ),
+    radial-gradient(
+      circle at 85.35533905932738% 14.644660940672622%,
+      rgb(255, 191, 0),
+      rgba(242, 185, 13, 0.8) 10%,
+      rgba(230, 179, 26, 0.6) 20%,
+      rgba(204, 166, 51, 0.4) 30%,
+      rgba(166, 147, 89, 0.2) 40%,
+      hsla(45, 0%, 50%, 0) 50%
+    ),
+    radial-gradient(
+      circle at 100% 50%,
+      #80ff00,
+      rgba(128, 242, 13, 0.8) 10%,
+      rgba(128, 230, 26, 0.6) 20%,
+      rgba(128, 204, 51, 0.4) 30%,
+      rgba(128, 166, 89, 0.2) 40%,
+      hsla(90, 0%, 50%, 0) 50%
+    ),
+    radial-gradient(
+      circle at 85.35533905932738% 85.35533905932738%,
+      #00ff40,
+      rgba(13, 242, 70, 0.8) 10%,
+      rgba(26, 230, 77, 0.6) 20%,
+      rgba(51, 204, 89, 0.4) 30%,
+      rgba(89, 166, 108, 0.2) 40%,
+      hsla(135, 0%, 50%, 0) 50%
+    ),
+    radial-gradient(
+      circle at 50.00000000000001% 100%,
+      #0ff,
+      rgba(13, 242, 242, 0.8) 10%,
+      rgba(26, 230, 230, 0.6) 20%,
+      rgba(51, 204, 204, 0.4) 30%,
+      rgba(89, 166, 166, 0.2) 40%,
+      hsla(180, 0%, 50%, 0) 50%
+    ),
+    radial-gradient(
+      circle at 14.64466094067263% 85.35533905932738%,
+      #0040ff,
+      rgba(13, 70, 242, 0.8) 10%,
+      rgba(26, 77, 230, 0.6) 20%,
+      rgba(51, 89, 204, 0.4) 30%,
+      rgba(89, 108, 166, 0.2) 40%,
+      hsla(225, 0%, 50%, 0) 50%
+    ),
+    radial-gradient(
+      circle at 0 50.00000000000001%,
+      #7f00ff,
+      rgba(128, 13, 242, 0.8) 10%,
+      rgba(128, 26, 230, 0.6) 20%,
+      rgba(128, 51, 204, 0.4) 30%,
+      rgba(128, 89, 166, 0.2) 40%,
+      hsla(270, 0%, 50%, 0) 50%
+    ),
+    radial-gradient(
+      circle at 14.644660940672615% 14.64466094067263%,
+      #ff00bf,
+      rgba(242, 13, 185, 0.8) 10%,
+      rgba(230, 26, 179, 0.6) 20%,
+      rgba(204, 51, 166, 0.4) 30%,
+      rgba(166, 89, 147, 0.2) 40%,
+      hsla(315, 0%, 50%, 0) 50%
+    );
+}
+
+.Point {
+  position: absolute;
+  top: 0;
+  user-select: none;
+  will-change: width, height;
+
+  left: 50%;
+  top: 50%;
+  z-index: 1;
+}
+
+.PointInner {
+  left: 100%;
+  -webkit-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  border: 5px solid #fff;
+  border-radius: 50%;
+  box-shadow: 0 2px 12px rgba(14, 19, 24, 0.15), 0 0 1px rgba(14, 19, 24, 0.07);
+  position: relative;
+  top: 100%;
+  width: 20px;
+  height: 20px;
+}
