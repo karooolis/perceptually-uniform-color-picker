@@ -32,8 +32,8 @@ circle {
     rgb(134, 181, 74),
     rgb(243, 248, 237)
   );
-  width: 300px;
-  height: 300px;
+  width: 600px;
+  height: 600px;
   cursor: pointer;
   border-radius: 100%;
   outline: none;
@@ -162,4 +162,47 @@ circle {
   top: 100%;
   width: 20px;
   height: 20px;
+}
+
+/* Lightness circle */
+#circle {
+  position: relative;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+}
+
+#circle-in {
+  position: absolute;
+  top: 35px;
+  left: 35px;
+  width: 230px;
+  height: 230px;
+  border-radius: 50%;
+  background: #fff;
+}
+
+#picker {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  height: 15px;
+  margin-top: -7.5px;
+  width: 50%;
+  -webkit-transform-origin: center left;
+  -moz-transform-origin: center left;
+  -ms-transform-origin: center left;
+  -o-transform-origin: center left;
+  transform-origin: center left;
+}
+
+#picker-circle {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: #fff;
+  border: 3px solid red;
+  margin: 0 0 0 auto;
+  cursor: move;
+  z-index: 100;
 }
