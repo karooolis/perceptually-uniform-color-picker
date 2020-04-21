@@ -141,27 +141,21 @@ circle {
 }
 
 .Point {
-  position: absolute;
-  top: 0;
+  position: relative;
+
   user-select: none;
   will-change: width, height;
-
-  left: 50%;
-  top: 50%;
   z-index: 1;
-}
 
-.PointInner {
-  left: 100%;
-  -webkit-transform: translate(-50%, -50%);
-  transform: translate(-50%, -50%);
   border: 5px solid #fff;
   border-radius: 50%;
   box-shadow: 0 2px 12px rgba(14, 19, 24, 0.15), 0 0 1px rgba(14, 19, 24, 0.07);
-  position: relative;
-  top: 100%;
-  width: 20px;
-  height: 20px;
+  box-sizing: border-box;
+
+  width: 30px;
+  height: 30px;
+
+  margin: -15px;
 }
 
 /* Lightness circle */
