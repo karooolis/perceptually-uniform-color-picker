@@ -21,25 +21,17 @@ const ColorPicker = () => {
       rotate = function (x, y) {
         var deltaX = x - center.x,
           deltaY = y - center.y,
-          // The atan2 method returns a numeric value between -pi and pi representing the angle theta of an (x,y) point.
-          // This is the counterclockwise angle, measured in radians, between the positive X axis, and the point (x,y).
-          // Note that the arguments to this function pass the y-coordinate first and the x-coordinate second.
-          // atan2 is passed separate x and y arguments, and atan is passed the ratio of those two arguments.
-          // * from Mozilla's MDN
+          angle = Math.atan2(deltaY, deltaX) * (180 / Math.PI);
 
-          // Basically you give it an [y, x] difference of two points and it give you back an angle
-          // The 0 point of the angle is left (the initial position of the picker is also left)
+        function calcAngleDegrees(x, y) {
+          return Math.atan2(y, x) * 180 / Math.PI;
+        }
 
-          angle = (Math.atan2(deltaY, deltaX) * 180) / Math.PI;
-
-        // Math.atan2(deltaY, deltaX) => [-PI +PI]
-        // We must convert it to deg so...
-        // / Math.PI => [-1 +1]
-        // * 180 => [-180 +180]
+        // TODO: adjust calculations
+        const lightness = (calcAngleDegrees(Math.abs(deltaX), deltaY) + 90) / 180 * 100;
 
         return angle;
       },
-      // DRAGSTART
       mousedown = function (event) {
         event.preventDefault();
         document.body.style.cursor = "move";
@@ -84,28 +76,6 @@ const ColorPicker = () => {
           if ((p = prefs[i] + "ransform") in style) return p;
         }
       })(),
-      rotate = function (x, y) {
-        var deltaX = x - center.x,
-          deltaY = y - center.y,
-          // The atan2 method returns a numeric value between -pi and pi representing the angle theta of an (x,y) point.
-          // This is the counterclockwise angle, measured in radians, between the positive X axis, and the point (x,y).
-          // Note that the arguments to this function pass the y-coordinate first and the x-coordinate second.
-          // atan2 is passed separate x and y arguments, and atan is passed the ratio of those two arguments.
-          // * from Mozilla's MDN
-
-          // Basically you give it an [y, x] difference of two points and it give you back an angle
-          // The 0 point of the angle is left (the initial position of the picker is also left)
-
-          angle = (Math.atan2(deltaY, deltaX) * 180) / Math.PI;
-
-        // Math.atan2(deltaY, deltaX) => [-PI +PI]
-        // We must convert it to deg so...
-        // / Math.PI => [-1 +1]
-        // * 180 => [-180 +180]
-
-        return angle;
-      },
-      // DRAGSTART
       mousedown = function (event) {
         event.preventDefault();
         document.body.style.cursor = "move";
@@ -120,97 +90,62 @@ const ColorPicker = () => {
           top: rect.top + window.scrollY,
         };
       },
-      mousemove = function (e) {
-        const circleWidth = 244;
-        const circleHeight = 244;
-        const radius = circleWidth / 2;
+      mousemove = (e) => {
+        // TODO: hardcoded values, change later
+        const diameter = 244;
+        const radius = diameter / 2;
 
         const { left: circleLeft, top: circleTop } = getOffset(pickerCircle);
         const { left: containerLeft, top: containerTop } = getOffset(circle);
         const left = Math.abs(containerLeft - e.pageX);
         const top = Math.abs(containerTop - e.pageY);
 
-        // let isInside = ((left - center.x) ^ 2 + (top - center.y)) < Math.pow(radius, 2);
-
-        // const dx = Math.abs(circleLeft - center.x + 15) // 15 is radius of picker circle
-        // const dy = Math.abs(circleTop - center.y + 15)
-
-        // console.log('circle yo', circleTop, e.pageY, e.offsetY, e.clientY)
-
-        const dx = Math.abs(e.pageX - center.x); // 15 is radius of picker circle
+        const dx = Math.abs(e.pageX - center.x);
         const dy = Math.abs(e.pageY - center.y);
-        const R = radius;
+
+        const deltaX = e.pageX - center.x;
+        const deltaY = e.pageY - center.y;
+        let radians = Math.atan2(deltaY, deltaX);
+        if (radians < 0) {
+          radians += 2 * Math.PI;
+        }
+
+        let newX = left;
+        let newY = top;
 
         function isInside() {
-          if (dx + dy <= R) {
+          if (dx + dy <= radius) {
             return true;
           }
 
-          if (dx > R) {
+          if (dx > radius) {
             return false;
           }
 
-          if (dy > R) {
+          if (dy > radius) {
             return false;
           }
 
-          if (Math.pow(dx, 2) + Math.pow(dy, 2) <= Math.pow(R, 2)) {
+          if (Math.pow(dx, 2) + Math.pow(dy, 2) <= Math.pow(radius, 2)) {
             return true;
           }
 
           return false;
         }
 
-        // const deltaX = e.pageX - center.x;
-        // const deltaY = e.pageY - center.y;
-        // const angle = Math.atan(deltaY, deltaX);
-        // // const angle = (Math.atan2(deltaY, deltaX) * 180) / Math.PI;
-        // console.log('angle', angle)
-
-        if (isInside()) {
-          pickerCircle.style[transform] = `translate(${left}px, ${top}px)`;
-        } else {
-          const deltaX = e.pageX - center.x;
-          const deltaY = e.pageY - center.y;
-          let radians = Math.atan2(deltaY, deltaX);
-          if (radians < 0) {
-            radians += 2 * Math.PI;
-          }
-
-          const x2 = radius + radius * Math.cos(radians);
-          const y2 = radius + radius * Math.sin(radians);
-
-          // console.log(angle, x2, y2)
-
-          pickerCircle.style[transform] = `translate(${x2}px, ${y2}px)`;
+        if (!isInside()) {
+          newX = radius + radius * Math.cos(radians);
+          newY = radius + radius * Math.sin(radians);
         }
 
-        // console.log('isInside', isInside())
+        // TODO: maybe adjust calculations for this part later
+        const distanceFromCenter = Math.min(radius, Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)))
+        const hue = (radians + 1.5708) * (180 / Math.PI) % 360;
+        const saturation = distanceFromCenter * 100 / radius;
 
-        // console.log("rotate", isInside(), angle, left, top);
+        // console.log(hue, saturation)
 
-        // console.log(e.pageX, e.pageY);
-        // console.log(circleTop, containerTop);
-
-        // const translateStr = pickerCircle.style[transform];
-
-        // console.log(left, top, translateStr)
-
-        // console.log(currentTarget)
-
-        // const translateStr = pickerCircle.style[transform];
-        // const translate = translateStr
-        //   .substring(translateStr.indexOf("(") + 1, translateStr.indexOf(")"))
-        //   .split(",");
-
-        // const { x, y } = pickerCircle.getBoundingClientRect();
-
-        // console.log(x, pageX, y, pageY);
-
-        // const left = Math.abs(x - pageX);
-        // const top = Math.abs(y - pageY);
-
-        // console.log(translateStr, left, top, translate)
+        pickerCircle.style[transform] = `translate(${newX}px, ${newY}px)`;
       },
       // DRAGEND
       mouseup = function () {
