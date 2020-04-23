@@ -20,8 +20,6 @@ import {
   findChromaBoundaries,
   findHueBoundaries,
 } from "./calcs";
-import ColorWheel from "./color-wheel";
-import LightnessCircle from "./lightness-circle";
 import ColorPicker from "./color-picker";
 
 const generateColor = () => {
@@ -305,9 +303,6 @@ class App extends Component {
               );
             })}
           </div>
-
-          {/* <ColorWheel /> */}
-          {/* <LightnessCircle /> */}
 
           <ColorPicker />
 
