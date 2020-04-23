@@ -1,6 +1,8 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 
 const ColorPicker = () => {
+  const [color, setColor] = useState([50, 50, 50]);
+
   useEffect(() => {
     var circle = document.getElementById("circle"),
       picker = document.getElementById("picker"),
@@ -24,11 +26,14 @@ const ColorPicker = () => {
           angle = Math.atan2(deltaY, deltaX) * (180 / Math.PI);
 
         function calcAngleDegrees(x, y) {
-          return Math.atan2(y, x) * 180 / Math.PI;
+          return (Math.atan2(y, x) * 180) / Math.PI;
         }
 
         // TODO: adjust calculations
-        const lightness = (calcAngleDegrees(Math.abs(deltaX), deltaY) + 90) / 180 * 100;
+        const lightness =
+          ((calcAngleDegrees(Math.abs(deltaX), deltaY) + 90) / 180) * 100;
+
+        setColor([color[0], color[1], lightness]);
 
         return angle;
       },
@@ -39,26 +44,22 @@ const ColorPicker = () => {
         document.addEventListener("mousemove", mousemove);
         document.addEventListener("mouseup", mouseup);
       },
-      // DRAG
       mousemove = function (event) {
         picker.style[transform] =
           "rotate(" + rotate(event.pageX, event.pageY) + "deg)";
       },
-      // DRAGEND
       mouseup = function () {
         document.body.style.cursor = null;
         document.removeEventListener("mouseup", mouseup);
         document.removeEventListener("mousemove", mousemove);
       };
 
-    // DRAG START
     pickerCircle.addEventListener("mousedown", mousedown);
 
-    // ENABLE STARTING THE DRAG IN THE BLACK CIRCLE
     circle.addEventListener("mousedown", function (event) {
       if (event.target == this) mousedown(event);
     });
-  }, []);
+  }, [color]);
 
   useEffect(() => {
     var circle = document.getElementById("circle-hue-saturation-2"),
@@ -139,52 +140,67 @@ const ColorPicker = () => {
         }
 
         // TODO: maybe adjust calculations for this part later
-        const distanceFromCenter = Math.min(radius, Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)))
-        const hue = (radians + 1.5708) * (180 / Math.PI) % 360;
-        const saturation = distanceFromCenter * 100 / radius;
+        const distanceFromCenter = Math.min(
+          radius,
+          Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2))
+        );
+        const hue = ((radians + 1.5708) * (180 / Math.PI)) % 360;
+        const saturation = (distanceFromCenter * 100) / radius;
 
-        // console.log(hue, saturation)
+        setColor([hue, saturation, color[2]]);
 
         pickerCircle.style[transform] = `translate(${newX}px, ${newY}px)`;
       },
-      // DRAGEND
       mouseup = function () {
         document.body.style.cursor = null;
         document.removeEventListener("mouseup", mouseup);
         document.removeEventListener("mousemove", mousemove);
       };
 
-    // DRAG START
     pickerCircle.addEventListener("mousedown", mousedown);
-
-    // ENABLE STARTING THE DRAG IN THE BLACK CIRCLE
     circle.addEventListener("mousedown", function (event) {
       if (event.target == this) mousedown(event);
     });
-  }, []);
+  }, [color]);
 
   return (
-    <div id="circle" className=" PickerContainerTop">
-      <div id="picker">
-        <div id="picker-circle"></div>
-      </div>
+    <>
+      <div
+        style={{
+          width: 100,
+          height: 100,
+          background: `hsl(${color[0]}, ${color[1]}%, ${color[2]}%)`,
+        }}
+      />
 
-      <div id="circle-hue-saturation" className="PickerContainerMiddle">
-        <div
-          id="circle-hue-saturation-2"
-          className="PickerContainer"
-          style={{ position: "relative" }}
-        >
+      <div
+        id="circle"
+        className="PickerContainerTop"
+        style={{
+          background: `linear-gradient(rgb(0, 0, 0), hsl(${color[0]}, ${color[1]}%, 50%), hsl(${color[0]}, ${color[1]}%, 95%))`,
+        }}
+      >
+        <div id="picker">
+          <div id="picker-circle"></div>
+        </div>
+
+        <div id="circle-hue-saturation" className="PickerContainerMiddle">
           <div
-            id="picker-circle-2"
-            className="Point"
-            style={{ transform: "translate(112px, 112px)" }}
+            id="circle-hue-saturation-2"
+            className="PickerContainer"
+            style={{ position: "relative" }}
           >
-            <div className="PointInner" />
+            <div
+              id="picker-circle-2"
+              className="Point"
+              style={{ transform: "translate(112px, 112px)" }}
+            >
+              <div className="PointInner" />
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

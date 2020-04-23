@@ -1,18 +1,9 @@
 import React, { Component } from "react";
 import ReactDOM from "react-dom";
 import _ from "lodash";
-import contrast from "get-contrast";
-import Draggable from "react-draggable";
-import RGBPicker from "./rgb-picker";
-import HSLPicker from "./hsl-picker";
 import HCLPicker from "./hcl-picker";
-import LABPicker from "./lab-picker";
-import ColorSpectrum from "./color-spectrum";
 import ColorSquareBig from "./color-square-big";
-import colors from "color-space";
-import Hue from "./hue";
 import Graph from "./graph";
-import GraphHue from "./graph-hue";
 import "./styles.css";
 import {
   lchToRgb,
@@ -21,14 +12,6 @@ import {
   findHueBoundaries,
 } from "./calcs";
 import ColorPicker from "./color-picker";
-
-const generateColor = () => {
-  const luminance = Math.floor(Math.random() * 100 + 0);
-  const chroma = Math.floor(Math.random() * 100 + 0);
-  const hue = Math.floor(Math.random() * 360 + 0);
-
-  return [luminance, chroma, hue];
-};
 
 const DEFAULT_ROWS = 5;
 const DEFAULT_COLUMNS = 5;

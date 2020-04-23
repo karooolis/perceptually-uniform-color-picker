@@ -72,7 +72,7 @@ class Empty extends Component {
           <ColorSquare colors={colors[1]} idx={1} mode="hsl" divider={1} />
           <ColorSquare colors={colors[2]} idx={2} mode="hsl" divider={1} />
         </div>
-        
+
         <h4>HSLuv</h4>
         <div
           style={{

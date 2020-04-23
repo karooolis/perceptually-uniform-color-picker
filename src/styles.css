@@ -27,11 +27,11 @@ circle {
 } */
 
 .PickerContainerTop {
-  background: linear-gradient(
+  /* background: linear-gradient(
     rgb(0, 0, 0),
     rgb(134, 181, 74),
     rgb(243, 248, 237)
-  );
+  ); */
   width: 600px;
   height: 600px;
   cursor: pointer;
