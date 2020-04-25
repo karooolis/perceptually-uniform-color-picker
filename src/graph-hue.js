@@ -8,7 +8,7 @@ var margin = { top: 10, right: 10, bottom: 20, left: 20 },
   width = 360 - margin.left - margin.right,
   height = 130 - margin.top - margin.bottom;
 
-class utils extends Component {
+class GraphHue extends Component {
   componentDidMount() {
     this.x = d3.scaleLinear().range([0, width]);
     this.y = d3.scaleLinear().range([height, 0]);
@@ -213,4 +213,4 @@ class utils extends Component {
   }
 }
 
-export default utils;
+export default GraphHue;

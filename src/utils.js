@@ -63,11 +63,8 @@ export const xyzToRgb = _xyz => {
   r = x * 3.240969941904521 + y * -1.537383177570093 + z * -0.498610760293;
   g = x * -0.96924363628087 + y * 1.87596750150772 + z * 0.041555057407175;
   b = x * 0.055630079696993 + y * -0.20397695888897 + z * 1.056971514242878;
-
   r = r > 0.0031308 ? 1.055 * Math.pow(r, 1.0 / 2.4) - 0.055 : (r = r * 12.92);
-
   g = g > 0.0031308 ? 1.055 * Math.pow(g, 1.0 / 2.4) - 0.055 : (g = g * 12.92);
-
   b = b > 0.0031308 ? 1.055 * Math.pow(b, 1.0 / 2.4) - 0.055 : (b = b * 12.92);
 
   let impossible = false;
@@ -95,58 +92,11 @@ export const lchToRgb = lch => {
   };
 };
 
-// const hues = [...Array(360).keys()]
-
-// const idx1 = _.findIndex(hues, hue => {
-//   const {impossible, color} = lchToRgb([50, 50, hue]);
-
-//   return !impossible;
-// })
-
-// const idx2 = _.findIndex(hues.slice(idx1), hue => {
-//   const {impossible, color} = lchToRgb([50, 50, hue]);
-
-//   return impossible;
-// })
-
-// console.log(idx1, idx2);
-
 export const findBoundaries = color => {
-  // const hues = [...Array(360).keys()];
-  // const min = _.findIndex(chromas, chroma => {
-  //   const { impossible, color } = lchToRgb([50, chroma, 50]);
-  //   return !impossible;
-  // });
-  // const max = _.findIndex(chromas.slice(idx1), chroma => {
-  //   const { impossible, color } = lchToRgb([50, chroma, 50]);
-  //   return impossible;
-  // });
-
   return {
     min: Math.floor(Math.random() * 100 + 1),
     max: Math.floor(Math.random() * 100 + 1)
   };
-
-  // const chromas = [...Array(100).keys()];
-  // const idx1 = _.findIndex(chromas, chroma => {
-  //   const { impossible, color } = lchToRgb([50, chroma, 50]);
-  //   return !impossible;
-  // });
-  // const idx2 = _.findIndex(chromas.slice(idx1), chroma => {
-  //   const { impossible, color } = lchToRgb([50, chroma, 50]);
-  //   return impossible;
-  // });
-  // console.log(idx1, idx2 + idx1);
-  // const luminances = [...Array(100).keys()];
-  // const idx3 = _.findIndex(luminances, luminance => {
-  //   const { impossible, color } = lchToRgb([luminance, 50, 50]);
-  //   return !impossible;
-  // });
-  // const idx4 = _.findIndex(luminances.slice(idx3), luminance => {
-  //   const { impossible, color } = lchToRgb([luminance, 50, 50]);
-  //   return impossible;
-  // });
-  // console.log(idx3, idx4 + idx3);
 };
 
 export const findChromaBoundaries = color => {
@@ -177,11 +127,11 @@ export const findLuminanceBoundaries = color => {
   const hue = color[2];
 
   const min = _.findIndex(luminances, luminance => {
-    const { impossible, color } = lchToRgb([luminance, chroma, hue]);
+    const { impossible } = lchToRgb([luminance, chroma, hue]);
     return !impossible;
   });
   const max = _.findIndex(luminances.slice(min), luminance => {
-    const { impossible, color } = lchToRgb([luminance, chroma, hue]);
+    const { impossible } = lchToRgb([luminance, chroma, hue]);
     return impossible;
   });
 
@@ -198,11 +148,11 @@ export const findHueBoundaries = color => {
   const luminance = color[0];
 
   const min = _.findIndex(hues, hue => {
-    const { impossible, color } = lchToRgb([luminance, chroma, hue]);
+    const { impossible } = lchToRgb([luminance, chroma, hue]);
     return impossible;
   });
   const max = _.findIndex(hues.slice(min), hue => {
-    const { impossible, color } = lchToRgb([luminance, chroma, hue]);
+    const { impossible } = lchToRgb([luminance, chroma, hue]);
     return !impossible;
   });
 

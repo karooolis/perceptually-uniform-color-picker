@@ -15,7 +15,7 @@ const margin = { top: 0, right: 0, bottom: 0, left: 0 },
 
 const xAdjust = 6 / 5;
 
-class utils extends Component {
+class Graph extends Component {
   componentDidMount() {
     this.x = d3.scaleLinear().range([0, width]);
     this.y = d3.scaleLinear().range([height, 0]);
@@ -249,4 +249,4 @@ class utils extends Component {
   }
 }
 
-export default utils;
+export default Graph;
