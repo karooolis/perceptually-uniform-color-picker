@@ -62,21 +62,30 @@ const ColorPicker = () => {
   }, []);
 
   return (
-    <LightnessCircle ref={circle} $color={color}>
-      <Lightness
-        center={center}
-        color={color}
-        setColor={setColor}
-        onMouseDown={onMouseDown}
-      />
+    <>
+      <div style={{
+        width: '100px',
+        height: '100px',
+        background: `hsl(${color[0]}, ${color[1]}%, ${color[2]}%)`
+      }} />
 
-      <ChromaSaturation
-        center={center}
-        color={color}
-        setColor={setColor}
-        onMouseDown={onMouseDown}
-      />
-    </LightnessCircle>
+      <LightnessCircle ref={circle} $color={color}>
+        <Lightness
+          center={center}
+          color={color}
+          setColor={setColor}
+          onMouseDown={onMouseDown}
+        />
+
+        <ChromaSaturation
+          circle={circle}
+          center={center}
+          color={color}
+          setColor={setColor}
+          onMouseDown={onMouseDown}
+        />
+      </LightnessCircle>
+    </>
   );
 };
 

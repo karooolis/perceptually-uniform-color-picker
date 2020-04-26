@@ -25,15 +25,13 @@ const LightnessPicker = styled("div", {
 const Lightness = ({ center, color, setColor, onMouseDown }) => {
   const [angle, setAngle] = useState(0);
 
-  const calcAngle = useCallback((x, y) => {
-    return (Math.atan2(y, x) * 180) / Math.PI;
-  }, []);
+  const calcAngle = useCallback(
+    (x, y) => (Math.atan2(y, x) * 180) / Math.PI,
+    []
+  );
 
   const calcLightness = useCallback(
-    (x, y) => {
-      // TODO: try to simplify calculations
-      return ((calcAngle(Math.abs(x), y) + 90) / 180) * 100;
-    },
+    (x, y) => ((calcAngle(Math.abs(x), y) + 90) / 180) * 100,
     [calcAngle]
   );
 

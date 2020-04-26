@@ -97,104 +97,85 @@ const ChromaSaturationCircle = styled("div", {
     )`,
 });
 
-const ChromaSaturationPicker = styled("div", {
+const ChromaSaturationPicker = styled("div", ({ $x, $y }) => ({
   width: "30px",
   height: "30px",
   margin: "-15px",
   border: "5px solid #fff",
   borderRadius: "50%",
   boxShadow: "0 2px 12px rgba(14, 19, 24, 0.15)",
-  transform: "translate(100px, 100px)",
+  transform: `translate(${$x}px, ${$y}px)`,
   boxSizing: "border-box",
   willChange: "width, height",
   userSelect: "none",
   zIndex: 1,
-});
+}));
 
-const ChromaSaturation = ({ center, color, setColor, onMouseDown }) => {
-  const [angle, setAngle] = useState(0);
+const ChromaSaturation = ({ circle, center, color, setColor, onMouseDown }) => {
+  const [pickerCoords, setPickerCoords] = useState({ x: 50, y: 50 });
+  const diameter = 244; // TODO: calculate this elsehwere
+  const radius = diameter / 2;
 
-  const calcAngle = useCallback((x, y) => {
-    return (Math.atan2(y, x) * 180) / Math.PI;
-  }, []);
-
-  const calcLightness = useCallback(
-    (x, y) => {
-      // TODO: try to simplify calculations
-      return ((calcAngle(Math.abs(x), y) + 90) / 180) * 100;
-    },
-    [calcAngle]
-  );
-
+  // Element distance from window (x and y)
   const getOffset = useCallback((el) => {
     const rect = el.getBoundingClientRect();
     return {
-      left: rect.left + window.scrollX,
-      top: rect.top + window.scrollY,
+      x: rect.left + window.scrollX,
+      y: rect.top + window.scrollY,
     };
   }, []);
 
+  const distanceFromCenter = useCallback(
+    (dx, dy) => Math.min(radius, Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2))),
+    [radius]
+  );
+
+  const isPickerInside = useCallback(
+    (dx, dy) => {
+      dx = Math.abs(dx);
+      dy = Math.abs(dy);
+
+      if (dx + dy <= radius) {
+        return true;
+      } else if (dx > radius) {
+        return false;
+      } else if (dy > radius) {
+        return false;
+      } else if (Math.pow(dx, 2) + Math.pow(dy, 2) <= Math.pow(radius, 2)) {
+        return true;
+      }
+      return false;
+    },
+    [radius]
+  );
+
   const handleMouseMove = useCallback(
     ({ pageX, pageY }) => {
-      // TODO: clean up
-      // const diameter = 244;
-      // const radius = diameter / 2;
+      const { x: offsetX, y: offsetY } = getOffset(circle.current);
+      const x = Math.abs(offsetX - pageX);
+      const y = Math.abs(offsetY - pageY);
+      const dx = pageX - center.current.x;
+      const dy = pageY - center.current.y;
 
-      // const { left: containerLeft, top: containerTop } = getOffset(circle);
-      // const left = Math.abs(containerLeft - e.pageX);
-      // const top = Math.abs(containerTop - e.pageY);
+      let radians = Math.atan2(dy, dx);
+      if (radians < 0) {
+        radians += 2 * Math.PI;
+      }
 
-      // const dx = Math.abs(e.pageX - center.x);
-      // const dy = Math.abs(e.pageY - center.y);
+      let newX = x;
+      let newY = y;
+      if (!isPickerInside(dx, dy)) {
+        newX = radius + radius * Math.cos(radians);
+        newY = radius + radius * Math.sin(radians);
+      }
 
-      // const deltaX = e.pageX - center.x;
-      // const deltaY = e.pageY - center.y;
-      // let radians = Math.atan2(deltaY, deltaX);
-      // if (radians < 0) {
-      //   radians += 2 * Math.PI;
-      // }
+      const hue = ((radians + 1.5708) * (180 / Math.PI)) % 360;
+      const saturation = (distanceFromCenter(dx, dy) * 100) / radius;
 
-      // let newX = left;
-      // let newY = top;
-
-      // function isInside() {
-      //   if (dx + dy <= radius) {
-      //     return true;
-      //   }
-
-      //   if (dx > radius) {
-      //     return false;
-      //   }
-
-      //   if (dy > radius) {
-      //     return false;
-      //   }
-
-      //   if (Math.pow(dx, 2) + Math.pow(dy, 2) <= Math.pow(radius, 2)) {
-      //     return true;
-      //   }
-
-      //   return false;
-      // }
-
-      // if (!isInside()) {
-      //   newX = radius + radius * Math.cos(radians);
-      //   newY = radius + radius * Math.sin(radians);
-      // }
-
-      // // TODO: maybe adjust calculations for this part later
-      // const distanceFromCenter = Math.min(
-      //   radius,
-      //   Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2))
-      // );
-      // const hue = ((radians + 1.5708) * (180 / Math.PI)) % 360;
-      // const saturation = (distanceFromCenter * 100) / radius;
-
-      // setColor([hue, saturation, color[2]]);
-
-      // pickerCircle.style[transform] = `translate(${newX}px, ${newY}px)`;
+      setColor([hue, saturation, color[2]]);
+      setPickerCoords({ x: newX, y: newY });
     },
-    []
+    [center, circle, color, distanceFromCenter, getOffset, isPickerInside, radius, setColor]
   );
 
   const handleMouseDown = useCallback(
@@ -205,7 +186,11 @@ const ChromaSaturation = ({ center, color, setColor, onMouseDown }) => {
   return (
     <ChromaSaturationCircleContainer>
       <ChromaSaturationCircle>
-        <ChromaSaturationPicker onMouseDown={handleMouseDown} />
+        <ChromaSaturationPicker
+          $x={pickerCoords.x}
+          $y={pickerCoords.y}
+          onMouseDown={handleMouseDown}
+        />
       </ChromaSaturationCircle>
     </ChromaSaturationCircleContainer>
   );
