@@ -1,33 +1,26 @@
-import React, { Component } from "react";
+import React from "react";
 import spaces from "color-space";
 import contrast from "get-contrast";
 
-class ColorSquareBig extends Component {
-  render() {
-    const { idx, colors, selectedIdx } = this.props;
-    const rgb = spaces.lchab.rgb(colors);
+const ColorSquareBig = ({ idx, color, selected, setColorIdx }) => {
+  const rgb = spaces.lchab.rgb(color);
+  const rgbStr = `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`; // TODO: move to utils
 
-    return (
-      <div
-        onClick={this.props.setIdx}
-        style={{
-          textAlign: "center",
-          paddingTop: "20px",
-          cursor: "pointer",
-          border: idx === selectedIdx ? "2px solid #000" : "none",
-          background: `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`,
-          color: "#e65100"
-        }}
-      >
-        {this.props.showContrast &&
-          parseFloat(
-            contrast
-              .ratio("#e65100", `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`)
-              .toFixed(2)
-          )}
-      </div>
-    );
-  }
-}
+  return (
+    <div
+      onClick={() => setColorIdx(idx)}
+      style={{
+        textAlign: "center",
+        paddingTop: "20px",
+        cursor: "pointer",
+        border: selected ? "2px solid #000" : "none",
+        background: rgbStr,
+        color: "#e65100",
+      }}
+    >
+      {parseFloat(contrast.ratio("#e65100", rgbStr).toFixed(2))}
+    </div>
+  );
+};
 
 export default ColorSquareBig;

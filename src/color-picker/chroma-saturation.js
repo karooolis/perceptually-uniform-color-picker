@@ -151,6 +151,7 @@ const ChromaSaturation = ({ circle, center, color, setColor, onMouseDown }) => {
 
   const handleMouseMove = useCallback(
     ({ pageX, pageY }) => {
+      // TODO: try to simplify calculations
       const { x: offsetX, y: offsetY } = getOffset(circle.current);
       const x = Math.abs(offsetX - pageX);
       const y = Math.abs(offsetY - pageY);

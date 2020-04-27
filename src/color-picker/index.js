@@ -13,12 +13,11 @@ const LightnessCircle = styled("div", ({ $color }) => ({
   cursor: "pointer",
 }));
 
-const ColorPicker = () => {
+const ColorPicker = ({color, setColor}) => {
   const circle = useRef();
   const mouseMoveCb = useRef();
   const dragging = useRef(false);
   const center = useRef({ x: 0, y: 0 });
-  const [color, setColor] = useState([50, 50, 50]);
 
   const onMouseMove = useCallback((evt) => {
     if (!dragging.current) {
