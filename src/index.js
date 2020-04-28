@@ -28,8 +28,7 @@ const App = () => {
   const color = useMemo(() => _.get(colors, colorIdx), [colorIdx, colors]);
   const setColor = useCallback(
     (color) => {
-      const lchabColor = spaces.hsl.lchab(_.clone(color)); // TODO: change to consistent format
-      const newColors = _.set(_.clone(colors), colorIdx, lchabColor);
+      const newColors = _.set(_.clone(colors), colorIdx, color);
       setColors(newColors);
     },
     [colorIdx, colors]

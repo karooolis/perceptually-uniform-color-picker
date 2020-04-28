@@ -1,6 +1,10 @@
 const _ = require("lodash");
 const convertColors = require("color-space");
 
+export const hslCssStr = ([hue, saturation, lightness]) => {
+  return `hsl(${hue}, ${saturation}%, ${lightness}%)`
+}
+
 export const whitepoint = {
   //1931 2°
   2: {

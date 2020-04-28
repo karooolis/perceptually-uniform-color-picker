@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState, useCallback } from "react";
 import { styled } from "styletron-react";
 import Lightness from "./lightness";
 import ChromaSaturation from "./chroma-saturation";
+import { hslCssStr } from '../utils';
 
 const LightnessCircle = styled("div", ({ $color }) => ({
   position: "relative",
@@ -65,7 +66,7 @@ const ColorPicker = ({color, setColor}) => {
       <div style={{
         width: '100px',
         height: '100px',
-        background: `hsl(${color[0]}, ${color[1]}%, ${color[2]}%)`
+        background: hslCssStr(color) // `hsl(${color[0]}, ${color[1]}%, ${color[2]}%)`
       }} />
 
       <LightnessCircle ref={circle} $color={color}>
