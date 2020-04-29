@@ -19,7 +19,6 @@ import ColorPicker from "./color-picker";
 const App = () => {
   const [colorIdx, setColorIdx] = useState([0, 0]);
   const [colors, setColors] = useState(DEFAULT_COLORS);
-
   const { rows, cols } = useMemo(
     () => ({ rows: 5, cols: 5 }), // TODO: { rows: colors[0].length, cols: colors.length },
     []
@@ -48,7 +47,6 @@ const App = () => {
           _.map(colorsRow, (color, colIdx) => {
             const idx = [rowIdx, colIdx];
             const selected = rowIdx === colorIdx[0] && colIdx === colorIdx[1];
-
             return (
               <ColorSquareBig
                 key={`color-${rowIdx}-${colIdx}`}
@@ -62,7 +60,7 @@ const App = () => {
         )}
       </div>
 
-      <ColorPicker color={color} setColor={setColor} />
+      <ColorPicker color={color} colorIdx={colorIdx} setColor={setColor} />
     </>
   );
 };

@@ -1,24 +1,24 @@
-import React, { useEffect, useRef, useState, useCallback } from "react";
+import React, { useEffect, useRef, useMemo, useState, useCallback } from "react";
+import _ from "lodash";
 import { styled } from "styletron-react";
 import Lightness from "./lightness";
 import ChromaSaturation from "./chroma-saturation";
-import { hslCssStr } from '../utils';
+import { hslCssStr } from "../utils";
+import { usePrevious } from "../hooks"
 
-const LightnessCircle = styled("div", ({ $color }) => ({
+const ColorPickerContainer = styled("div", ({ $color }) => ({
   position: "relative",
   width: "300px",
   height: "300px",
-  borderRadius: "100%",
-  background: `linear-gradient(rgb(0, 0, 0), hsl(${$color[0]}, ${$color[1]}%, 50%), hsl(${$color[0]}, ${$color[1]}%, 95%))`,
-  willChange: "background",
   cursor: "pointer",
 }));
 
-const ColorPicker = ({color, setColor}) => {
+const ColorPicker = ({ color, colorIdx, setColor }) => {
   const circle = useRef();
   const mouseMoveCb = useRef();
   const dragging = useRef(false);
   const center = useRef({ x: 0, y: 0 });
+  const prevColorIdx = usePrevious(colorIdx)
 
   const onMouseMove = useCallback((evt) => {
     if (!dragging.current) {
@@ -59,33 +59,30 @@ const ColorPicker = ({color, setColor}) => {
       x: rect.left + rect.width / 2,
       y: rect.top + rect.height / 2,
     };
-  }, []);
+  }, [circle]);
 
   return (
-    <>
-      <div style={{
-        width: '100px',
-        height: '100px',
-        background: hslCssStr(color) // `hsl(${color[0]}, ${color[1]}%, ${color[2]}%)`
-      }} />
+    <ColorPickerContainer ref={circle}>
+      <Lightness
+        circle={circle}
+        center={center}
+        color={color}
+        colorIdx={colorIdx}
+        prevColorIdx={prevColorIdx}
+        setColor={setColor}
+        onMouseDown={onMouseDown}
+      />
 
-      <LightnessCircle ref={circle} $color={color}>
-        <Lightness
-          center={center}
-          color={color}
-          setColor={setColor}
-          onMouseDown={onMouseDown}
-        />
-
-        <ChromaSaturation
-          circle={circle}
-          center={center}
-          color={color}
-          setColor={setColor}
-          onMouseDown={onMouseDown}
-        />
-      </LightnessCircle>
-    </>
+      <ChromaSaturation
+        circle={circle}
+        center={center}
+        color={color}
+        colorIdx={colorIdx}
+        prevColorIdx={prevColorIdx}
+        setColor={setColor}
+        onMouseDown={onMouseDown}
+      />
+    </ColorPickerContainer>
   );
 };
 

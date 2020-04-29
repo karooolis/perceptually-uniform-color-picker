@@ -1,5 +1,16 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
+import _ from 'lodash';
 import { styled } from "styletron-react";
+
+const LightnessCircle = styled("div", ({ $color }) => ({
+  position: "absolute",
+  width: "100%",
+  height: "100%",
+  borderRadius: "100%",
+  background: `linear-gradient(rgb(0, 0, 0), hsl(${$color[0]}, ${$color[1]}%, 50%), hsl(${$color[0]}, ${$color[1]}%, 95%))`,
+  willChange: "background",
+  cursor: "pointer",
+}));
 
 const LightnessPickerContainer = styled("div", ({ $angle }) => ({
   position: "absolute",
@@ -22,9 +33,21 @@ const LightnessPicker = styled("div", {
   zIndex: "100",
 });
 
-const Lightness = ({ center, color, setColor, onMouseDown }) => {
+const Lightness = ({ circle, center, color, colorIdx, prevColorIdx, setColor, onMouseDown }) => {
   const [angle, setAngle] = useState(0);
 
+  useEffect(() => {
+    if (_.isEqual(colorIdx, prevColorIdx)) {
+      return;
+    }
+
+    const lightness = color[2];
+    const newAngle = (((lightness / 100) * 2) - 1) * 90
+
+    setAngle(newAngle)
+  }, [angle, color, colorIdx, prevColorIdx])
+
+  // Calculate picker angle based on mouse position
   const calcAngle = useCallback(
     (x, y) => (Math.atan2(y, x) * 180) / Math.PI,
     []
@@ -54,9 +77,11 @@ const Lightness = ({ center, color, setColor, onMouseDown }) => {
   );
 
   return (
-    <LightnessPickerContainer $angle={angle}>
-      <LightnessPicker onMouseDown={handleMouseDown} />
-    </LightnessPickerContainer>
+    <LightnessCircle $color={color}>
+      <LightnessPickerContainer $angle={angle}>
+        <LightnessPicker onMouseDown={handleMouseDown} />
+      </LightnessPickerContainer>
+    </LightnessCircle>
   );
 };
 
