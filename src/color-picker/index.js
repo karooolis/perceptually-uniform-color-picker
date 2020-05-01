@@ -1,9 +1,8 @@
-import React, { useEffect, useRef, useMemo, useState, useCallback } from "react";
+import React, { useEffect, useRef, useCallback } from "react";
 import _ from "lodash";
 import { styled } from "styletron-react";
 import Lightness from "./lightness";
 import ChromaSaturation from "./chroma-saturation";
-import { hslCssStr } from "../utils";
 import { usePrevious } from "../hooks"
 
 const ColorPickerContainer = styled("div", ({ $color }) => ({

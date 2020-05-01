@@ -1,5 +1,13 @@
-import React, { useEffect, useRef, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback } from "react";
+import _ from "lodash";
 import { styled } from "styletron-react";
+import {
+  calcRotation,
+  calcHue,
+  calcSaturation,
+  calcPickerCoords,
+  calcPickerCoordsFromColor,
+} from "./utils";
 
 const ChromaSaturationCircleContainer = styled("div", {
   position: "absolute",
@@ -111,78 +119,49 @@ const ChromaSaturationPicker = styled("div", ({ $x, $y }) => ({
   zIndex: 1,
 }));
 
-const ChromaSaturation = ({ circle, center, color, setColor, onMouseDown }) => {
+const ChromaSaturation = ({
+  circle,
+  center,
+  color,
+  prevColorIdx,
+  colorIdx,
+  setColor,
+  onMouseDown,
+}) => {
   const [pickerCoords, setPickerCoords] = useState({ x: 50, y: 50 });
   const diameter = 244; // TODO: calculate this elsehwere
   const radius = diameter / 2;
 
-  // Element distance from window (x and y)
-  const getOffset = useCallback((el) => {
-    const rect = el.getBoundingClientRect();
-    return {
-      x: rect.left + window.scrollX,
-      y: rect.top + window.scrollY,
-    };
-  }, []);
-
-  const distanceFromCenter = useCallback(
-    (dx, dy) => Math.min(radius, Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2))),
-    [radius]
-  );
-
-  const isPickerInside = useCallback(
-    (dx, dy) => {
-      dx = Math.abs(dx);
-      dy = Math.abs(dy);
-
-      if (dx + dy <= radius) {
-        return true;
-      } else if (dx > radius) {
-        return false;
-      } else if (dy > radius) {
-        return false;
-      } else if (Math.pow(dx, 2) + Math.pow(dy, 2) <= Math.pow(radius, 2)) {
-        return true;
-      }
-      return false;
-    },
-    [radius]
-  );
-
   const handleMouseMove = useCallback(
     ({ pageX, pageY }) => {
-      // TODO: try to simplify calculations
-      const { x: offsetX, y: offsetY } = getOffset(circle.current);
-      const x = Math.abs(offsetX - pageX);
-      const y = Math.abs(offsetY - pageY);
       const dx = pageX - center.current.x;
       const dy = pageY - center.current.y;
-
-      let radians = Math.atan2(dy, dx);
-      if (radians < 0) {
-        radians += 2 * Math.PI;
-      }
-
-      let newX = x;
-      let newY = y;
-      if (!isPickerInside(dx, dy)) {
-        newX = radius + radius * Math.cos(radians);
-        newY = radius + radius * Math.sin(radians);
-      }
-
-      const hue = ((radians + 1.5708) * (180 / Math.PI)) % 360;
-      const saturation = (distanceFromCenter(dx, dy) * 100) / radius;
+      // TODO: move all these chrome/saturation specific calculations into its own calculation class, same for lightness
+      const rotation = calcRotation(dy, dx);
+      const { x, y } = calcPickerCoords(pageX, pageY, circle, dx, dy, radius, rotation);
+      const hue = calcHue(rotation);
+      const saturation = calcSaturation(radius, dx, dy);
 
       setColor([hue, saturation, color[2]]);
-      setPickerCoords({ x: newX, y: newY });
+      setPickerCoords({ x, y });
     },
-    [center, circle, color, distanceFromCenter, getOffset, isPickerInside, radius, setColor]
+    [center, circle, color, radius, setColor]
   );
 
   const handleMouseDown = useCallback(
     (evt) => onMouseDown(evt, handleMouseMove),
     [handleMouseMove, onMouseDown]
   );
+
+  // TODO: might be better to refactor by setting up callback handlers in parent
+  useEffect(() => {
+    if (_.isEqual(colorIdx, prevColorIdx)) {
+      return;
+    }
+
+    const newCoords = calcPickerCoordsFromColor(color)
+    setPickerCoords(newCoords)
+  }, [color, colorIdx, prevColorIdx]);
 
   return (
     <ChromaSaturationCircleContainer>

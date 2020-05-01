@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import _ from 'lodash';
 import { styled } from "styletron-react";
 
@@ -36,17 +36,6 @@ const LightnessPicker = styled("div", {
 const Lightness = ({ circle, center, color, colorIdx, prevColorIdx, setColor, onMouseDown }) => {
   const [angle, setAngle] = useState(0);
 
-  useEffect(() => {
-    if (_.isEqual(colorIdx, prevColorIdx)) {
-      return;
-    }
-
-    const lightness = color[2];
-    const newAngle = (((lightness / 100) * 2) - 1) * 90
-
-    setAngle(newAngle)
-  }, [angle, color, colorIdx, prevColorIdx])
-
   // Calculate picker angle based on mouse position
   const calcAngle = useCallback(
     (x, y) => (Math.atan2(y, x) * 180) / Math.PI,
@@ -75,6 +64,17 @@ const Lightness = ({ circle, center, color, colorIdx, prevColorIdx, setColor, on
     (evt) => onMouseDown(evt, handleMouseMove),
     [handleMouseMove, onMouseDown]
   );
+
+  // TODO: might be better to refactor by setting up callback handlers in parent
+  useEffect(() => {
+    if (_.isEqual(colorIdx, prevColorIdx)) {
+      return;
+    }
+
+    const lightness = color[2];
+    const newAngle = (((lightness / 100) * 2) - 1) * 90
+    setAngle(newAngle)
+  }, [angle, color, colorIdx, prevColorIdx])
 
   return (
     <LightnessCircle $color={color}>
