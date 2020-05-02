@@ -33,6 +33,8 @@ const App = () => {
     [colorIdx, colors]
   );
 
+  console.log(color)
+
   return (
     <>
       <div

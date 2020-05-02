@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import _ from "lodash";
 import { styled } from "styletron-react";
 import {
-  calcRotation,
+  calcAngleRadians,
   calcHue,
   calcSaturation,
   calcPickerCoords,
@@ -135,12 +135,13 @@ const ChromaSaturation = ({
   const handleMouseMove = useCallback(
     ({ pageX, pageY }) => {
       const dx = pageX - center.current.x;
-      const dy = pageY - center.current.y;
+      const dy = center.current.y - pageY;
+
       // TODO: move all these chrome/saturation specific calculations into its own calculation class, same for lightness
-      const rotation = calcRotation(dy, dx);
-      const { x, y } = calcPickerCoords(pageX, pageY, circle, dx, dy, radius, rotation);
-      const hue = calcHue(rotation);
+      const angle = calcAngleRadians(dy, dx);
+      const hue = calcHue(angle);
       const saturation = calcSaturation(radius, dx, dy);
+      const { x, y } = calcPickerCoords(pageX, pageY, circle, dx, dy, radius, angle);
 
       setColor([hue, saturation, color[2]]);
       setPickerCoords({ x, y });
@@ -159,9 +160,9 @@ const ChromaSaturation = ({
       return;
     }
 
-    const newCoords = calcPickerCoordsFromColor(color)
+    const newCoords = calcPickerCoordsFromColor(radius, color)
     setPickerCoords(newCoords)
-  }, [color, colorIdx, prevColorIdx]);
+  }, [color, colorIdx, prevColorIdx, radius]);
 
   return (
     <ChromaSaturationCircleContainer>
