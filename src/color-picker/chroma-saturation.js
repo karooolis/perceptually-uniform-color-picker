@@ -23,12 +23,12 @@ const ChromaSaturationCircleContainer = styled("div", {
 
 const ChromaSaturationCircle = styled("div", {
   position: "absolute",
-  width: "calc(100% - 32px)",
-  height: "calc(100% - 32px)",
+  width: "calc(100%)",
+  height: "calc(100%)",
   top: "50%",
   left: "50%",
   boxSizing: "border-box",
-  transform: "translate(-50%, -50%)",
+  transform: "translate(-50%, -50%) rotate(-90deg)",
   cursor: "pointer",
   borderRadius: "100%",
   background: `radial-gradient(
@@ -129,7 +129,7 @@ const ChromaSaturation = ({
   onMouseDown,
 }) => {
   const [pickerCoords, setPickerCoords] = useState({ x: 50, y: 50 });
-  const diameter = 244; // TODO: calculate this elsehwere
+  const diameter = 276; // TODO: calculate this elsehwere
   const radius = diameter / 2;
 
   const handleMouseMove = useCallback(
@@ -141,7 +141,15 @@ const ChromaSaturation = ({
       const angle = calcAngleRadians(dy, dx);
       const hue = calcHue(angle);
       const saturation = calcSaturation(radius, dx, dy);
-      const { x, y } = calcPickerCoords(pageX, pageY, circle, dx, dy, radius, angle);
+      const { x, y } = calcPickerCoords(
+        pageX,
+        pageY,
+        circle,
+        dx,
+        dy,
+        radius,
+        angle
+      );
 
       setColor([hue, saturation, color[2]]);
       setPickerCoords({ x, y });
@@ -160,19 +168,18 @@ const ChromaSaturation = ({
       return;
     }
 
-    const newCoords = calcPickerCoordsFromColor(radius, color)
-    setPickerCoords(newCoords)
+    const newCoords = calcPickerCoordsFromColor(radius, color);
+    setPickerCoords(newCoords);
   }, [color, colorIdx, prevColorIdx, radius]);
 
   return (
     <ChromaSaturationCircleContainer>
-      <ChromaSaturationCircle>
-        <ChromaSaturationPicker
-          $x={pickerCoords.x}
-          $y={pickerCoords.y}
-          onMouseDown={handleMouseDown}
-        />
-      </ChromaSaturationCircle>
+      <ChromaSaturationCircle />
+      <ChromaSaturationPicker
+        $x={pickerCoords.x}
+        $y={pickerCoords.y}
+        onMouseDown={handleMouseDown}
+      />
     </ChromaSaturationCircleContainer>
   );
 };

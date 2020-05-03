@@ -9,7 +9,7 @@ export const distanceFromCenter = (radius, dx, dy) => {
 };
 
 /**
- * Angle is calculated in radians, starts at mid-right point and
+ * Angle is calculated in radians, starts at mid-left point and
  * goes clockwise. Since Math.atan2 returns angle in radians
  * between [-π,π], transformed it to radians between [0,2π].
  * @param {*} dy - y coordinate of a point.
@@ -17,21 +17,23 @@ export const distanceFromCenter = (radius, dx, dy) => {
  */
 export const calcAngleRadians = (dy, dx) => {
   let radians = Math.atan2(dy, -dx);
-
-  console.log("radians 11", radians);
-
   if (radians < 0) {
     radians += 2 * Math.PI;
   }
-
   return radians;
 };
 
 const degreesToRadians = (degrees) => {
-  let radians = (degrees - 180) * (Math.PI / 180);
+  let adjustedDegrees = degrees;
+  if (adjustedDegrees > 180) {
+    adjustedDegrees -= 360;
+  }
+
+  let radians = (adjustedDegrees - 180) * (Math.PI / 180);
   if (radians < -Math.PI) {
     radians += 2 * Math.PI;
   }
+
   return radians;
 };
 
@@ -40,23 +42,19 @@ const degreesToRadians = (degrees) => {
  * @param {*} radians
  */
 export const radiansToDegrees = (radians) => {
-  return (radians * 180) / Math.PI;
+  return radians * (180 / Math.PI);
 };
 
 /**
  * Hue is calculated in degrees [0, 360], hue wheel starts at top point (red)
- * and goes clockwise. In order to get correct hue we need to offset
- * provided angle by -90 degrees. (TODO: should look into simplifying this)
+ * and goes clockwise.
  * @param {*} radians
  */
 export const calcHue = (radians) => {
-  let hue = radiansToDegrees(radians) - (90 % 360);
+  let hue = radiansToDegrees(radians);
   if (hue < 0) {
     hue += 360;
   }
-
-  console.log("radians 22", degreesToRadians(hue - 90));
-
   return hue;
 };
 
@@ -133,7 +131,7 @@ export const calcPickerCoords = (
     y = radius + radius * Math.sin(angle + Math.PI);
   }
 
-  return { x, y };
+  return { x: x, y: y };
 };
 
 /**
@@ -144,9 +142,11 @@ export const calcPickerCoordsFromColor = (radius, color) => {
   const hue = color[0];
   const saturation = color[1];
   const distance = (saturation * radius) / 100;
-  const radians = degreesToRadians(hue - 90); // 90 - hue angle offset
-  const x = Math.cos(radians) * distance;
-  const y = Math.sin(radians) * distance;
+  const radians = degreesToRadians(hue);
+  const x = Math.cos(radians) * distance + radius;
+  const y = Math.sin(radians) * distance + radius;
 
-  return { x, y };
+  const pickerOffset = 12;
+
+  return { x: x + pickerOffset, y: y + pickerOffset };
 };
