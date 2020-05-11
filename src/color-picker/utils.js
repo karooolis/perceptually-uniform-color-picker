@@ -125,6 +125,8 @@ export const calcPickerCoords = (
   angle
 ) => {
   const { x: offsetX, y: offsetY } = calcWindowOffset(circle.current);
+
+  // TODO: in this calculation x and y are off by -3 pixels. Not sure why, will need to investigate.
   let x = Math.abs(offsetX - pageX) - CHROMA_SATURATION_PICKER_RADIUS;
   let y = Math.abs(offsetY - pageY) - CHROMA_SATURATION_PICKER_RADIUS;
 

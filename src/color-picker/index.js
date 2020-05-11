@@ -24,8 +24,6 @@ const ColorPicker = ({ color, colorIdx, setColor }) => {
       return;
     }
 
-    console.log('evt', evt)
-
     if (typeof mouseMoveCb.current === "function") {
       mouseMoveCb.current(evt);
     }
