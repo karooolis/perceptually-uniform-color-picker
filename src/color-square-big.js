@@ -1,6 +1,4 @@
 import React from "react";
-import spaces from "color-space";
-import contrast from "get-contrast";
 import { hslCssStr } from './utils';
 
 const ColorSquareBig = ({ idx, color, selected, setColorIdx }) => {

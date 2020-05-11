@@ -1,3 +1,6 @@
+export const CONTAINER_RADIUS = 150;
+export const CHROMA_SATURATION_CIRCLE_OFFSET = 32;
+export const CHROMA_SATURATION_PICKER_RADIUS = 15;
 export const COLORS_PICKER_BACKGROUND = `
   radial-gradient(
     circle at 50% 0,

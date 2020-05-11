@@ -1,14 +1,14 @@
 import React, { useEffect, useRef, useCallback } from "react";
-import _ from "lodash";
 import { styled } from "styletron-react";
 import Lightness from "./lightness";
 import ChromaSaturation from "./chroma-saturation";
 import { usePrevious } from "../hooks"
+import { CONTAINER_RADIUS } from './consts';
 
 const ColorPickerContainer = styled("div", ({ $color }) => ({
   position: "relative",
-  width: "300px",
-  height: "300px",
+  width: `${CONTAINER_RADIUS * 2}px`,
+  height: `${CONTAINER_RADIUS * 2}px`,
   cursor: "pointer",
 }));
 
@@ -23,6 +23,8 @@ const ColorPicker = ({ color, colorIdx, setColor }) => {
     if (!dragging.current) {
       return;
     }
+
+    console.log('evt', evt)
 
     if (typeof mouseMoveCb.current === "function") {
       mouseMoveCb.current(evt);

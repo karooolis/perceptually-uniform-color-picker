@@ -1,3 +1,5 @@
+import { CHROMA_SATURATION_PICKER_RADIUS, CHROMA_SATURATION_CIRCLE_OFFSET } from './consts';
+
 /**
  * Distance in pixels from given point to circle center.
  * @param {*} radius - radius of a circle.
@@ -123,15 +125,15 @@ export const calcPickerCoords = (
   angle
 ) => {
   const { x: offsetX, y: offsetY } = calcWindowOffset(circle.current);
-  let x = Math.abs(offsetX - pageX);
-  let y = Math.abs(offsetY - pageY);
+  let x = Math.abs(offsetX - pageX) - CHROMA_SATURATION_PICKER_RADIUS;
+  let y = Math.abs(offsetY - pageY) - CHROMA_SATURATION_PICKER_RADIUS;
 
   if (!isPickerInside(radius, dx, dy)) {
-    x = radius + radius * Math.cos(angle + Math.PI);
-    y = radius + radius * Math.sin(angle + Math.PI);
+    x = radius * Math.cos(angle + Math.PI) + radius + CHROMA_SATURATION_CIRCLE_OFFSET / 2;
+    y = radius * Math.sin(angle + Math.PI) + radius + CHROMA_SATURATION_CIRCLE_OFFSET / 2;
   }
 
-  return { x: x, y: y };
+  return { x, y };
 };
 
 /**
@@ -143,10 +145,8 @@ export const calcPickerCoordsFromColor = (radius, color) => {
   const saturation = color[1];
   const distance = (saturation * radius) / 100;
   const radians = degreesToRadians(hue);
-  const x = Math.cos(radians) * distance + radius;
-  const y = Math.sin(radians) * distance + radius;
+  const x = Math.cos(radians) * distance + radius + CHROMA_SATURATION_CIRCLE_OFFSET / 2;
+  const y = Math.sin(radians) * distance + radius + CHROMA_SATURATION_CIRCLE_OFFSET / 2;
 
-  const pickerOffset = 12;
-
-  return { x: x + pickerOffset, y: y + pickerOffset };
+  return { x, y };
 };

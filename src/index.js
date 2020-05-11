@@ -3,16 +3,8 @@ import ReactDOM from "react-dom";
 import _ from "lodash";
 import { Provider as StyletronProvider, DebugEngine } from "styletron-react";
 import { Client as Styletron } from "styletron-engine-atomic";
-import spaces from "color-space";
 import ColorSquareBig from "./color-square-big";
-import Graph from "./graph";
 import "./styles.css";
-import {
-  lchToRgb,
-  findLuminanceBoundaries,
-  findChromaBoundaries,
-  findHueBoundaries,
-} from "./utils";
 import { DEFAULT_COLORS } from "./consts";
 import ColorPicker from "./color-picker";
 
@@ -20,7 +12,7 @@ const App = () => {
   const [colorIdx, setColorIdx] = useState([0, 0]);
   const [colors, setColors] = useState(DEFAULT_COLORS);
   const { rows, cols } = useMemo(
-    () => ({ rows: 5, cols: 5 }), // TODO: { rows: colors[0].length, cols: colors.length },
+    () => ({ rows: 5, cols: 5 }), // TODO: allow to add/remove rows/cols,
     []
   );
 
