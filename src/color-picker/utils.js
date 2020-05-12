@@ -1,4 +1,8 @@
-import { CHROMA_SATURATION_PICKER_RADIUS, CHROMA_SATURATION_CIRCLE_OFFSET } from './consts';
+// @flow
+import {
+  CHROMA_SATURATION_PICKER_RADIUS,
+  CHROMA_SATURATION_CIRCLE_OFFSET,
+} from "./consts";
 
 /**
  * Distance in pixels from given point to circle center.
@@ -6,8 +10,8 @@ import { CHROMA_SATURATION_PICKER_RADIUS, CHROMA_SATURATION_CIRCLE_OFFSET } from
  * @param {*} dx - y coordinate of a point.
  * @param {*} dy - x coordinate of a point.
  */
-export const distanceFromCenter = (radius, dx, dy) => {
-  return Math.min(radius, Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)));
+export const distanceFromCenter = (radius: number, dx: number, dy: number) => {
+  return Math.min(radius, Math.sqrt(dx ** 2 + dy ** 2));
 };
 
 /**
@@ -17,7 +21,7 @@ export const distanceFromCenter = (radius, dx, dy) => {
  * @param {*} dy - y coordinate of a point.
  * @param {*} dx - x coordinate of a point.
  */
-export const calcAngleRadians = (dy, dx) => {
+export const calcAngleRadians = (dy: number, dx: number) => {
   let radians = Math.atan2(dy, -dx);
   if (radians < 0) {
     radians += 2 * Math.PI;
@@ -43,7 +47,7 @@ const degreesToRadians = (degrees) => {
  * Convert radians to degrees [0, 360].
  * @param {*} radians
  */
-export const radiansToDegrees = (radians) => {
+export const radiansToDegrees = (radians: number) => {
   return radians * (180 / Math.PI);
 };
 
@@ -52,7 +56,7 @@ export const radiansToDegrees = (radians) => {
  * and goes clockwise.
  * @param {*} radians
  */
-export const calcHue = (radians) => {
+export const calcHue = (radians: number) => {
   let hue = radiansToDegrees(radians);
   if (hue < 0) {
     hue += 360;
@@ -66,7 +70,7 @@ export const calcHue = (radians) => {
  * @param {*} dx - x coordinate of a point.
  * @param {*} dy - y coordinate of a point.
  */
-export const calcSaturation = (radius, dx, dy) => {
+export const calcSaturation = (radius: number, dx: number, dy: number) => {
   return (distanceFromCenter(radius, dx, dy) * 100) / radius;
 };
 
@@ -76,17 +80,20 @@ export const calcSaturation = (radius, dx, dy) => {
  * @param {*} dx - x coordinate of a point.
  * @param {*} dy - y coordinate of a point.
  */
-export const isPickerInside = (radius, dx, dy) => {
+export const isPickerInside = (radius: number, dx: number, dy: number) => {
   dx = Math.abs(dx);
   dy = Math.abs(dy);
 
   if (dx + dy <= radius) {
     return true;
-  } else if (dx > radius) {
+  }
+  if (dx > radius) {
     return false;
-  } else if (dy > radius) {
+  }
+  if (dy > radius) {
     return false;
-  } else if (Math.pow(dx, 2) + Math.pow(dy, 2) <= Math.pow(radius, 2)) {
+  }
+  if (dx ** 2 + dy ** 2 <= radius ** 2) {
     return true;
   }
 
@@ -131,8 +138,14 @@ export const calcPickerCoords = (
   let y = Math.abs(offsetY - pageY) - CHROMA_SATURATION_PICKER_RADIUS;
 
   if (!isPickerInside(radius, dx, dy)) {
-    x = radius * Math.cos(angle + Math.PI) + radius + CHROMA_SATURATION_CIRCLE_OFFSET / 2;
-    y = radius * Math.sin(angle + Math.PI) + radius + CHROMA_SATURATION_CIRCLE_OFFSET / 2;
+    x =
+      radius * Math.cos(angle + Math.PI) +
+      radius +
+      CHROMA_SATURATION_CIRCLE_OFFSET / 2;
+    y =
+      radius * Math.sin(angle + Math.PI) +
+      radius +
+      CHROMA_SATURATION_CIRCLE_OFFSET / 2;
   }
 
   return { x, y };
@@ -142,13 +155,15 @@ export const calcPickerCoords = (
  * Calculate picker coordinates from color
  * @param {*} color
  */
-export const calcPickerCoordsFromColor = (radius, color) => {
+export const calcPickerCoordsFromColor = (radius: number, color) => {
   const hue = color[0];
   const saturation = color[1];
   const distance = (saturation * radius) / 100;
   const radians = degreesToRadians(hue);
-  const x = Math.cos(radians) * distance + radius + CHROMA_SATURATION_CIRCLE_OFFSET / 2;
-  const y = Math.sin(radians) * distance + radius + CHROMA_SATURATION_CIRCLE_OFFSET / 2;
+  const x =
+    Math.cos(radians) * distance + radius + CHROMA_SATURATION_CIRCLE_OFFSET / 2;
+  const y =
+    Math.sin(radians) * distance + radius + CHROMA_SATURATION_CIRCLE_OFFSET / 2;
 
   return { x, y };
 };

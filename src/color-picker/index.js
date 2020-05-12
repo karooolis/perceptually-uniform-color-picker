@@ -2,22 +2,22 @@ import React, { useEffect, useRef, useCallback } from "react";
 import { styled } from "styletron-react";
 import Lightness from "./lightness";
 import ChromaSaturation from "./chroma-saturation";
-import { usePrevious } from "../hooks"
-import { CONTAINER_RADIUS } from './consts';
+import { usePrevious } from "../hooks";
+import { CONTAINER_RADIUS } from "./consts";
 
-const ColorPickerContainer = styled("div", ({ $color }) => ({
+const ColorPickerContainer = styled("div", {
   position: "relative",
   width: `${CONTAINER_RADIUS * 2}px`,
   height: `${CONTAINER_RADIUS * 2}px`,
   cursor: "pointer",
-}));
+});
 
 const ColorPicker = ({ color, colorIdx, setColor }) => {
   const circle = useRef();
   const mouseMoveCb = useRef();
   const dragging = useRef(false);
   const center = useRef({ x: 0, y: 0 });
-  const prevColorIdx = usePrevious(colorIdx)
+  const prevColorIdx = usePrevious(colorIdx);
 
   const onMouseMove = useCallback((evt) => {
     if (!dragging.current) {

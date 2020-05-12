@@ -1,3 +1,4 @@
+// @flow
 import React, { useState, useMemo, useCallback } from "react";
 import ReactDOM from "react-dom";
 import _ from "lodash";
@@ -18,8 +19,8 @@ const App = () => {
 
   const color = useMemo(() => _.get(colors, colorIdx), [colorIdx, colors]);
   const setColor = useCallback(
-    (color) => {
-      const newColors = _.set(_.clone(colors), colorIdx, color);
+    (newColor: string) => {
+      const newColors = _.set(_.clone(colors), colorIdx, newColor);
       setColors(newColors);
     },
     [colorIdx, colors]
