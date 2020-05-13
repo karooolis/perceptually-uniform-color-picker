@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import _ from 'lodash';
+import _ from "lodash";
 import { styled } from "styletron-react";
 
 const LightnessCircle = styled("div", ({ $color }) => ({
@@ -24,16 +24,25 @@ const LightnessPickerContainer = styled("div", ({ $angle }) => ({
 }));
 
 const LightnessPicker = styled("div", {
-  width: "15px",
-  height: "15px",
+  width: "11px",
+  height: "11px",
   margin: "0 0 0 auto",
   borderRadius: "50%",
   background: "#fff",
   cursor: "dragging",
   zIndex: "100",
+  boxShadow: "0 0 1px 0px rgba(0, 0, 0, 0.75)",
 });
 
-const Lightness = ({ circle, center, color, colorIdx, prevColorIdx, setColor, onMouseDown }) => {
+const Lightness = ({
+  circle,
+  center,
+  color,
+  colorIdx,
+  prevColorIdx,
+  setColor,
+  onMouseDown,
+}) => {
   const [angle, setAngle] = useState(0);
 
   // Calculate picker angle based on mouse position
@@ -47,7 +56,7 @@ const Lightness = ({ circle, center, color, colorIdx, prevColorIdx, setColor, on
     [calcAngle]
   );
 
-  const handleMouseMove = useCallback(
+  const movePicker = useCallback(
     ({ pageX, pageY }) => {
       const deltaX = pageX - center.current.x;
       const deltaY = pageY - center.current.y;
@@ -60,10 +69,10 @@ const Lightness = ({ circle, center, color, colorIdx, prevColorIdx, setColor, on
     [calcAngle, calcLightness, center, color, setColor]
   );
 
-  const handleMouseDown = useCallback(
-    (evt) => onMouseDown(evt, handleMouseMove),
-    [handleMouseMove, onMouseDown]
-  );
+  const handleMouseDown = useCallback((evt) => onMouseDown(evt, movePicker), [
+    movePicker,
+    onMouseDown,
+  ]);
 
   // TODO: might be better to refactor by setting up callback handlers in parent
   useEffect(() => {
@@ -72,12 +81,12 @@ const Lightness = ({ circle, center, color, colorIdx, prevColorIdx, setColor, on
     }
 
     const lightness = color[2];
-    const newAngle = (((lightness / 100) * 2) - 1) * 90
-    setAngle(newAngle)
-  }, [angle, color, colorIdx, prevColorIdx])
+    const newAngle = ((lightness / 100) * 2 - 1) * 90;
+    setAngle(newAngle);
+  }, [angle, color, colorIdx, prevColorIdx]);
 
   return (
-    <LightnessCircle $color={color}>
+    <LightnessCircle $color={color} onMouseDown={handleMouseDown}>
       <LightnessPickerContainer $angle={angle}>
         <LightnessPicker onMouseDown={handleMouseDown} />
       </LightnessPickerContainer>

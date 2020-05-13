@@ -1,7 +1,11 @@
 import React, { useEffect, useState, useCallback } from "react";
 import _ from "lodash";
 import { styled } from "styletron-react";
-import { COLORS_PICKER_BACKGROUND, CHROMA_SATURATION_PICKER_RADIUS, CHROMA_SATURATION_CIRCLE_OFFSET } from './consts';
+import {
+  COLORS_PICKER_BACKGROUND,
+  CHROMA_SATURATION_PICKER_RADIUS,
+  CHROMA_SATURATION_CIRCLE_OFFSET,
+} from "./consts";
 import {
   calcAngleRadians,
   calcHue,
@@ -62,7 +66,7 @@ const ChromaSaturation = ({
   const diameter = 276 - CHROMA_SATURATION_CIRCLE_OFFSET; // TODO: calculate this elsehwere
   const radius = diameter / 2;
 
-  const handleMouseMove = useCallback(
+  const movePicker = useCallback(
     ({ pageX, pageY }) => {
       const dx = pageX - center.current.x;
       const dy = center.current.y - pageY;
@@ -87,10 +91,10 @@ const ChromaSaturation = ({
     [center, circle, color, radius, setColor]
   );
 
-  const handleMouseDown = useCallback(
-    (evt) => onMouseDown(evt, handleMouseMove),
-    [handleMouseMove, onMouseDown]
-  );
+  const handleMouseDown = useCallback((evt) => onMouseDown(evt, movePicker), [
+    movePicker,
+    onMouseDown,
+  ]);
 
   // TODO: might be better to refactor by setting up callback handlers in parent
   useEffect(() => {
@@ -104,7 +108,7 @@ const ChromaSaturation = ({
 
   return (
     <ChromaSaturationCircleContainer>
-      <ChromaSaturationCircle />
+      <ChromaSaturationCircle onMouseDown={handleMouseDown} />
       <ChromaSaturationPicker
         $x={pickerCoords.x}
         $y={pickerCoords.y}
