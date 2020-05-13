@@ -1,9 +1,11 @@
 // @flow
-import React, { useMemo, useCallback, useEffect } from "react";
+import React, { useMemo, useCallback, useRef, useEffect } from "react";
 import * as d3 from "d3";
 import _ from "lodash";
 import { getData, strokeToFill } from "gradient-path";
 import spaces from "color-space";
+import { hslCssStr } from "../utils";
+import { usePrevious } from "../hooks";
 import { findChromaBoundaries, lchToRgb } from "./utils";
 import type { ColorIdx, Colors } from ".";
 
@@ -48,6 +50,8 @@ const GraphLCH = ({ customKey, title, colorIdx, colors, row }: Props) => {
       };
     });
 
+    // TODO: perhaps there is a better way to handle line
+    // trail-offs than adding these extra hidden points
     return [
       {
         ...data[0],
@@ -59,7 +63,10 @@ const GraphLCH = ({ customKey, title, colorIdx, colors, row }: Props) => {
         idx: data.length,
       },
     ];
-  });
+  }, [colors]);
+  const prevData = usePrevious(data);
+  const svg = useRef();
+  const valueline3 = useRef();
 
   useEffect(() => {
     const x = d3.scaleLinear().range([0, width]);
@@ -93,13 +100,13 @@ const GraphLCH = ({ customKey, title, colorIdx, colors, row }: Props) => {
       .y((d) => y(d.top) + xAxisHeight)
       .curve(d3.curveBasis);
 
-    const valueline3 = d3
+    valueline3.current = d3
       .line()
       .x((d) => x(d.idx * xAdjust))
       .y((d) => y(d.actual) + xAxisHeight)
       .curve(d3.curveNatural);
 
-    const svg = d3
+    svg.current = d3
       .select(`#svg-${customKey}`)
       .append("svg")
       .attr("width", width + margin.left + margin.right)
@@ -110,7 +117,7 @@ const GraphLCH = ({ customKey, title, colorIdx, colors, row }: Props) => {
     x.domain([0, data.length - 1]);
     y.domain([0, 100]);
 
-    const defs = svg.append("defs");
+    const defs = svg.current.append("defs");
     const pattern = defs
       .append("pattern")
       .attr("id", "green-pattern")
@@ -133,7 +140,7 @@ const GraphLCH = ({ customKey, title, colorIdx, colors, row }: Props) => {
       .attr("fill", "white");
 
     // Border
-    svg
+    svg.current
       .append("rect")
       .attr("class", "svg-border")
       .attr("height", height + xAxisHeight)
@@ -144,7 +151,7 @@ const GraphLCH = ({ customKey, title, colorIdx, colors, row }: Props) => {
       .attr("stroke-width", "2px");
 
     // top area
-    svg
+    svg.current
       .append("path")
       .attr("class", "area1")
       .attr("fill", "url('#green-pattern')")
@@ -152,7 +159,7 @@ const GraphLCH = ({ customKey, title, colorIdx, colors, row }: Props) => {
       .attr("stroke-width", "2px")
       .attr("d", area1(data));
 
-    svg
+    svg.current
       .append("path")
       .attr("class", "area2")
       .attr("stroke", "lightgray")
@@ -161,9 +168,16 @@ const GraphLCH = ({ customKey, title, colorIdx, colors, row }: Props) => {
       .attr("d", area2(data));
 
     // TODO: use this one - https://bl.ocks.org/mbostock/4163057
-    svg.append("path").attr("class", "line3").attr("d", valueline3(data));
+    // current.d("path").attr("class", "line3").attr("d", valueline3(data));
+    svg.current
+      .selectAll(".line3")
+      .data([data])
+      .enter()
+      .append("path")
+      .attr("class", "line3")
+      .attr("d", valueline3.current);
 
-    svg
+    svg.current
       .append("g")
       .attr("class", `circles-${customKey}`)
       .selectAll(`#svg circles-${customKey} circle`)
@@ -178,11 +192,10 @@ const GraphLCH = ({ customKey, title, colorIdx, colors, row }: Props) => {
           return "transparent";
         }
 
-        const rgb = spaces.lchab.rgb(d.color);
-        return `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`;
+        return hslCssStr(d.color);
       });
 
-    svg
+    svg.current
       .append("g")
       .attr("class", `text-${customKey}`)
       .selectAll(`#svg text-${customKey} text`)
@@ -199,7 +212,14 @@ const GraphLCH = ({ customKey, title, colorIdx, colors, row }: Props) => {
 
         return "gray";
       });
+    // TODO: fix linter to add correct dependencies autoatically
   }, []);
+
+  useEffect(() => {
+    // TODO: update only when data changes
+    console.log("data", data);
+    svg.current.selectAll(".line3").data([data]).attr("d", valueline3.current);
+  });
 
   return (
     <div>
