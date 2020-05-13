@@ -1,9 +1,11 @@
+// @flow
 import React, { useEffect, useRef, useCallback } from "react";
 import { styled } from "styletron-react";
 import Lightness from "./lightness";
 import ChromaSaturation from "./chroma-saturation";
 import { usePrevious } from "../hooks";
 import { CONTAINER_RADIUS } from "./consts";
+import type { Color, ColorIdx } from "..";
 
 const ColorPickerContainer = styled("div", {
   position: "relative",
@@ -12,7 +14,13 @@ const ColorPickerContainer = styled("div", {
   cursor: "pointer",
 });
 
-const ColorPicker = ({ color, colorIdx, setColor }) => {
+type Props = {|
+  color: Color,
+  colorIdx: ColorIdx,
+  setColor: (Color) => void,
+|};
+
+const ColorPicker = ({ color, colorIdx, setColor }: Props) => {
   const circle = useRef();
   const mouseMoveCb = useRef();
   const dragging = useRef(false);

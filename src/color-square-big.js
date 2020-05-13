@@ -1,7 +1,16 @@
+// @flow
 import React from "react";
-import { hslCssStr } from './utils';
+import { hslCssStr } from "./utils";
+import type { ColorIdx, Color } from ".";
 
-const ColorSquareBig = ({ idx, color, selected, setColorIdx }) => {
+type Props = {|
+  idx: ColorIdx,
+  color: Color,
+  setColorIdx: (ColorIdx) => void,
+  selected: boolean,
+|};
+
+const ColorSquareBig = ({ idx, color, selected, setColorIdx }: Props) => {
   return (
     <div
       onClick={() => setColorIdx(idx)}

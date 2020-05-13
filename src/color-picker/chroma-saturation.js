@@ -1,3 +1,4 @@
+// @flow
 import React, { useEffect, useState, useCallback } from "react";
 import _ from "lodash";
 import { styled } from "styletron-react";
@@ -13,6 +14,7 @@ import {
   calcPickerCoords,
   calcPickerCoordsFromColor,
 } from "./utils";
+import type { Color, ColorIdx } from "..";
 
 const ChromaSaturationCircleContainer = styled("div", {
   position: "absolute",
@@ -53,6 +55,12 @@ const ChromaSaturationPicker = styled("div", ({ $x, $y }) => ({
   zIndex: 1,
 }));
 
+type Props = {|
+  color: Color,
+  colorIdx: ColorIdx,
+  setColor: (Color) => void,
+|};
+
 const ChromaSaturation = ({
   circle,
   center,
@@ -61,7 +69,7 @@ const ChromaSaturation = ({
   colorIdx,
   setColor,
   onMouseDown,
-}) => {
+}: Props) => {
   const [pickerCoords, setPickerCoords] = useState({ x: 50, y: 50 });
   const diameter = 276 - CHROMA_SATURATION_CIRCLE_OFFSET; // TODO: calculate this elsehwere
   const radius = diameter / 2;

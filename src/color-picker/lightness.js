@@ -1,6 +1,8 @@
+// @flow
 import React, { useEffect, useState, useCallback } from "react";
 import _ from "lodash";
 import { styled } from "styletron-react";
+import type { Color, ColorIdx } from "..";
 
 const LightnessCircle = styled("div", ({ $color }) => ({
   position: "absolute",
@@ -34,6 +36,12 @@ const LightnessPicker = styled("div", {
   boxShadow: "0 0 1px 0px rgba(0, 0, 0, 0.75)",
 });
 
+type Props = {|
+  color: Color,
+  colorIdx: ColorIdx,
+  setColor: (Color) => void,
+|};
+
 const Lightness = ({
   circle,
   center,
@@ -42,7 +50,7 @@ const Lightness = ({
   prevColorIdx,
   setColor,
   onMouseDown,
-}) => {
+}: Props) => {
   const [angle, setAngle] = useState(0);
 
   // Calculate picker angle based on mouse position

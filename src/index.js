@@ -7,20 +7,33 @@ import { Client as Styletron } from "styletron-engine-atomic";
 import ColorSquareBig from "./color-square-big";
 import "./styles.css";
 import { DEFAULT_COLORS } from "./consts";
+import GraphLCH from "./graph-lch/index";
 import ColorPicker from "./color-picker";
 
+export type ColorIdx = {| row: number, col: number |}; // row, col
+export type Color = [number, number, number]; // hue, saturation, lightness
+export type Colors = Array<Array<Color>>;
+
 const App = () => {
-  const [colorIdx, setColorIdx] = useState([0, 0]);
+  const [colorIdx, setColorIdx] = useState({ row: 0, col: 0 });
   const [colors, setColors] = useState(DEFAULT_COLORS);
   const { rows, cols } = useMemo(
     () => ({ rows: 5, cols: 5 }), // TODO: allow to add/remove rows/cols,
     []
   );
 
-  const color = useMemo(() => _.get(colors, colorIdx), [colorIdx, colors]);
+  const color = useMemo(() => _.get(colors, [colorIdx.row, colorIdx.col]), [
+    colorIdx,
+    colors,
+  ]);
+
   const setColor = useCallback(
     (newColor: string) => {
-      const newColors = _.set(_.clone(colors), colorIdx, newColor);
+      const newColors = _.set(
+        _.clone(colors),
+        [colorIdx.row, colorIdx.col],
+        newColor
+      );
       setColors(newColors);
     },
     [colorIdx, colors]
@@ -38,8 +51,8 @@ const App = () => {
       >
         {_.map(colors, (colorsRow, rowIdx) =>
           _.map(colorsRow, (color, colIdx) => {
-            const idx = [rowIdx, colIdx];
-            const selected = rowIdx === colorIdx[0] && colIdx === colorIdx[1];
+            const idx = { row: rowIdx, col: colIdx };
+            const selected = rowIdx === colorIdx.row && colIdx === colorIdx.col;
             return (
               <ColorSquareBig
                 key={`color-${rowIdx}-${colIdx}`}
@@ -54,6 +67,13 @@ const App = () => {
       </div>
 
       <ColorPicker color={color} colorIdx={colorIdx} setColor={setColor} />
+      <GraphLCH
+        title="test"
+        customKey="test"
+        colorIdx={colorIdx}
+        colors={colors}
+        row
+      />
     </>
   );
 };
