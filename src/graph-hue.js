@@ -16,33 +16,33 @@ class GraphHue extends Component {
     // define the area
     this.area1 = d3
       .area()
-      .x(d => {
+      .x((d) => {
         return this.x(d.idx);
       })
-      .y0(d => {
+      .y0((d) => {
         return this.y(d.bottom);
       })
-      .y1(d => {
+      .y1((d) => {
         return this.y(d.top);
       })
       .curve(d3.curveBasis);
 
     this.lineBoundsTop = d3
       .line()
-      .x(d => {
+      .x((d) => {
         return this.x(d.idx);
       })
-      .y(d => {
+      .y((d) => {
         return this.y(d.top);
       })
       .curve(d3.curveBasis);
 
     this.lineBoundsBottom = d3
       .line()
-      .x(d => {
+      .x((d) => {
         return this.x(d.idx);
       })
-      .y(d => {
+      .y((d) => {
         return this.y(d.bottom);
       })
       .curve(d3.curveBasis);
@@ -61,30 +61,30 @@ class GraphHue extends Component {
     // define the line
     this.valueline1 = d3
       .line()
-      .x(d => {
+      .x((d) => {
         return this.x(d.idx);
       })
-      .y(d => {
+      .y((d) => {
         return this.y(d.bottom);
       })
       .curve(d3.curveBasis);
 
     this.valueline2 = d3
       .line()
-      .x(d => {
+      .x((d) => {
         return this.x(d.idx);
       })
-      .y(d => {
+      .y((d) => {
         return this.y(d.top);
       })
       .curve(d3.curveBasis);
 
     this.valueline3 = d3
       .line()
-      .x(d => {
+      .x((d) => {
         return this.x(d.idx);
       })
-      .y(d => {
+      .y((d) => {
         return this.y(d.actual);
       })
       .curve(d3.curveNatural);
@@ -106,7 +106,7 @@ class GraphHue extends Component {
     this.svg
       .append("path")
       .attr("class", "area1")
-      .attr("fill", "url('#green-pattern')")
+      .attr("fill", "url('#area-pattern')")
       .attr("stroke", "darkgray")
       .attr("stroke-width", "2px")
       .attr("d", this.area1(data));
@@ -135,9 +135,9 @@ class GraphHue extends Component {
       .enter()
       .append("circle")
       .attr("r", 8)
-      .attr("cx", d => this.x(d.idx))
-      .attr("cy", d => this.y(d.actual))
-      .attr("fill", d => {
+      .attr("cx", (d) => this.x(d.idx))
+      .attr("cy", (d) => this.y(d.actual))
+      .attr("fill", (d) => {
         const rgb = spaces.lchab.rgb(d.color);
         return `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`;
       });
@@ -194,9 +194,9 @@ class GraphHue extends Component {
       // .enter()
       // .update("circle")
       // .attr("r", 8)
-      .attr("cx", d => this.x(d.idx))
-      .attr("cy", d => this.y(d.actual))
-      .attr("fill", d => {
+      .attr("cx", (d) => this.x(d.idx))
+      .attr("cy", (d) => this.y(d.actual))
+      .attr("fill", (d) => {
         const rgb = spaces.lchab.rgb(d.color);
         return `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`;
       });

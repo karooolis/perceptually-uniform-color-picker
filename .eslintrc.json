@@ -9,7 +9,8 @@
     "airbnb",
     "prettier",
     "plugin:prettier/recommended",
-    "plugin:flowtype/recommended"
+    "plugin:flowtype/recommended",
+    "plugin:react-hooks/recommended"
   ],
   "globals": {
     "Atomics": "readonly",
@@ -22,7 +23,7 @@
     "ecmaVersion": 11,
     "sourceType": "module"
   },
-  "plugins": ["react", "prettier", "flowtype"],
+  "plugins": ["react", "prettier", "flowtype", "react-hooks"],
   "rules": {
     "prettier/prettier": "error",
     "react/jsx-filename-extension": "off"

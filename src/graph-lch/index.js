@@ -6,7 +6,7 @@ import { getData, strokeToFill } from "gradient-path";
 import spaces from "color-space";
 import { hslCssStr } from "../utils";
 import { usePrevious } from "../hooks";
-import { findChromaBoundaries, lchToRgb } from "./utils";
+import { findChromaBoundaries, lchToRgb, getGraphData } from "./utils";
 import type { ColorIdx, Colors } from ".";
 
 // set the dimensions and margins of the graph
@@ -22,7 +22,6 @@ const width = 360 - margin.left - margin.right;
 const height = 130 - margin.top - margin.bottom;
 
 // set stroke example https://bl.ocks.org/mbostock/4163057
-
 const xAdjust = 6 / 5;
 
 type Props = {|
@@ -34,191 +33,191 @@ type Props = {|
 |};
 
 const GraphLCH = ({ customKey, title, colorIdx, colors, row }: Props) => {
-  const data = useMemo(() => {
-    // TODO: handle row and col selection
-    const graphColors = colors[colorIdx.row];
-    const data = _.map(graphColors, (color, idx) => {
-      const { color: rgb, impossible } = lchToRgb(color); // xyzToRgb(xyz);
-      const { max, min } = findChromaBoundaries(color);
-
-      return {
-        idx: parseInt(idx, 10) + 0.5,
-        bottom: min,
-        top: max,
-        actual: color[1],
-        color,
-      };
-    });
-
-    // TODO: perhaps there is a better way to handle line
-    // trail-offs than adding these extra hidden points
-    return [
-      {
-        ...data[0],
-        idx: 0,
-      },
-      ...data,
-      {
-        ...data[data.length - 1],
-        idx: data.length,
-      },
-    ];
-  }, [colors]);
+  const graphInitialized = useRef(false);
+  const data = useMemo(() => getGraphData(colors, colorIdx), [
+    colors,
+    colorIdx,
+  ]);
   const prevData = usePrevious(data);
   const svg = useRef();
-  const valueline3 = useRef();
-
-  useEffect(() => {
+  const elements = useMemo(() => {
     const x = d3.scaleLinear().range([0, width]);
     const y = d3.scaleLinear().range([height, 0]);
-
-    // Top area
-    const area1 = d3
+    const topArea = d3
       .area()
       .x((d) => x(d.idx * xAdjust))
       .y0(xAxisHeight)
       .y1((d) => y(d.top) + xAxisHeight)
       .curve(d3.curveBasis);
 
-    const area2 = d3
+    const bottomArea = d3
       .area()
       .x((d) => x(d.idx * xAdjust))
       .y0(height + xAxisHeight)
       .y1((d) => y(d.bottom) + xAxisHeight)
       .curve(d3.curveBasis);
 
-    // define the line
-    const valueline1 = d3
-      .line()
-      .x((d) => x(d.idx * xAdjust))
-      .y((d) => y(d.bottom) + xAxisHeight)
-      .curve(d3.curveBasis);
-
-    const valueline2 = d3
-      .line()
-      .x((d) => x(d.idx * xAdjust))
-      .y((d) => y(d.top) + xAxisHeight)
-      .curve(d3.curveBasis);
-
-    valueline3.current = d3
+    const valuesLine = d3
       .line()
       .x((d) => x(d.idx * xAdjust))
       .y((d) => y(d.actual) + xAxisHeight)
       .curve(d3.curveNatural);
 
-    svg.current = d3
-      .select(`#svg-${customKey}`)
-      .append("svg")
-      .attr("width", width + margin.left + margin.right)
-      .attr("height", height + margin.top + margin.bottom + xAxisHeight)
-      .append("g")
-      .attr("transform", `translate(${margin.left},${margin.top})`);
-
-    x.domain([0, data.length - 1]);
-    y.domain([0, 100]);
-
-    const defs = svg.current.append("defs");
-    const pattern = defs
-      .append("pattern")
-      .attr("id", "green-pattern")
-      .attr("height", 1)
-      .attr("patternTransform", "rotate(70 0 0)")
-      .attr("width", 0.02);
-
-    pattern
-      .append("rect")
-      .attr("height", "100%")
-      .attr("width", "2px")
-      .attr("fill", "#e8e7e7");
-
-    pattern
-      .append("rect")
-      .attr("x", 5)
-      .attr("y", 0)
-      .attr("height", "100%")
-      .attr("width", "2px")
-      .attr("fill", "white");
-
-    // Border
-    svg.current
-      .append("rect")
-      .attr("class", "svg-border")
-      .attr("height", height + xAxisHeight)
-      .attr("width", width)
-      .attr("fill", "transparent")
-      .attr("border", "1px solid red")
-      .attr("stroke", "lightgray")
-      .attr("stroke-width", "2px");
-
-    // top area
-    svg.current
-      .append("path")
-      .attr("class", "area1")
-      .attr("fill", "url('#green-pattern')")
-      .attr("stroke", "lightgray")
-      .attr("stroke-width", "2px")
-      .attr("d", area1(data));
-
-    svg.current
-      .append("path")
-      .attr("class", "area2")
-      .attr("stroke", "lightgray")
-      .attr("stroke-width", "2px")
-      .attr("fill", "url('#green-pattern')")
-      .attr("d", area2(data));
-
-    // TODO: use this one - https://bl.ocks.org/mbostock/4163057
-    // current.d("path").attr("class", "line3").attr("d", valueline3(data));
-    svg.current
-      .selectAll(".line3")
-      .data([data])
-      .enter()
-      .append("path")
-      .attr("class", "line3")
-      .attr("d", valueline3.current);
-
-    svg.current
-      .append("g")
-      .attr("class", `circles-${customKey}`)
-      .selectAll(`#svg circles-${customKey} circle`)
-      .data(data)
-      .enter()
-      .append("circle")
-      .attr("r", 8)
-      .attr("cx", (d) => x(d.idx * xAdjust))
-      .attr("cy", (d) => y(d.actual) + xAxisHeight)
-      .attr("fill", (d) => {
-        if (d.idx === 0 || d.idx === data.length - 2) {
-          return "transparent";
-        }
-
-        return hslCssStr(d.color);
-      });
-
-    svg.current
-      .append("g")
-      .attr("class", `text-${customKey}`)
-      .selectAll(`#svg text-${customKey} text`)
-      .data(data)
-      .enter()
-      .append("text")
-      .text((d) => d.actual.toFixed(1))
-      .attr("x", (d) => x(d.idx * xAdjust) - 15)
-      .attr("y", "20")
-      .attr("fill", (d) => {
-        if (d.idx === 0 || d.idx === data.length - 2) {
-          return "transparent";
-        }
-
-        return "gray";
-      });
-    // TODO: fix linter to add correct dependencies autoatically
-  }, []);
+    return {
+      x,
+      y,
+      topArea,
+      bottomArea,
+      valuesLine,
+    };
+  }, [customKey]);
 
   useEffect(() => {
-    // TODO: update only when data changes
-    console.log("data", data);
-    svg.current.selectAll(".line3").data([data]).attr("d", valueline3.current);
+    const { x, y, topArea, bottomArea, valuesLine } = elements;
+
+    if (!graphInitialized.current) {
+      x.domain([0, data.length - 1]);
+      y.domain([0, 100]);
+
+      svg.current = d3
+        .select(`#svg-${customKey}`)
+        .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom + xAxisHeight)
+        .append("g")
+        .attr("transform", `translate(${margin.left},${margin.top})`);
+
+      const defs = svg.current.append("defs");
+
+      // TODO: define pattern elsewhere
+      const pattern = defs
+        .append("pattern")
+        .attr("id", "area-pattern")
+        .attr("height", 1)
+        .attr("patternTransform", "rotate(70 0 0)")
+        .attr("width", 0.02);
+
+      pattern
+        .append("rect")
+        .attr("height", "100%")
+        .attr("width", "2px")
+        .attr("fill", "#e8e7e7");
+
+      pattern
+        .append("rect")
+        .attr("x", 5)
+        .attr("y", 0)
+        .attr("height", "100%")
+        .attr("width", "2px")
+        .attr("fill", "white");
+
+      svg.current
+        .append("rect")
+        .attr("class", "svg-border")
+        .attr("height", height + xAxisHeight)
+        .attr("width", width)
+        .attr("fill", "transparent")
+        .attr("border", "1px solid red")
+        .attr("stroke", "lightgray")
+        .attr("stroke-width", "2px");
+
+      svg.current
+        .selectAll(".top-area")
+        .data([data])
+        .enter()
+        .append("path")
+        .attr("class", "top-area")
+        .attr("fill", "url('#area-pattern')")
+        .attr("stroke", "lightgray")
+        .attr("stroke-width", "2px")
+        .attr("d", topArea);
+
+      svg.current
+        .selectAll(".bottom-area")
+        .data([data])
+        .enter()
+        .append("path")
+        .attr("class", "bottom-area")
+        .attr("fill", "url('#area-pattern')")
+        .attr("stroke", "lightgray")
+        .attr("stroke-width", "2px")
+        .attr("d", bottomArea);
+
+      // TODO: use this for gradient colored line - https://bl.ocks.org/mbostock/4163057
+      svg.current
+        .selectAll(".line3")
+        .data([data])
+        .enter()
+        .append("path")
+        .attr("class", "line3")
+        .attr("d", valuesLine);
+
+      svg.current
+        .selectAll(`.circle-${customKey}`)
+        .data(data)
+        .enter()
+        .append("circle")
+        .attr("class", `circle-${customKey}`)
+        .attr("r", 8)
+        .attr("cx", (d) => x(d.idx * xAdjust))
+        .attr("cy", (d) => y(d.actual) + xAxisHeight)
+        .attr("fill", (d) => {
+          if (d.idx === 0 || d.idx === data.length - 2) {
+            return "transparent";
+          }
+
+          return hslCssStr(d.color);
+        });
+
+      svg.current
+        .selectAll(`text-${customKey}`)
+        .data(data)
+        .enter()
+        .append("text")
+        .attr("class", `text-${customKey}`)
+        .text((d) => parseInt(d.actual))
+        .attr("x", (d) => x(d.idx * xAdjust) - 7)
+        .attr("y", "20")
+        .attr("fill", (d) => {
+          if (d.idx === 0 || d.idx === data.length - 2) {
+            return "transparent";
+          }
+
+          return "gray";
+        });
+
+      graphInitialized.current = true;
+    } else if (data !== prevData) {
+      svg.current.selectAll(".line3").data([data]).attr("d", valuesLine);
+
+      svg.current
+        .selectAll(`.circle-${customKey}`)
+        .data(data)
+        .attr("cx", (d) => x(d.idx * xAdjust))
+        .attr("cy", (d) => y(d.actual) + xAxisHeight)
+        .attr("fill", (d) => {
+          if (d.idx === 0 || d.idx === data.length - 2) {
+            return "transparent";
+          }
+          return hslCssStr(d.color);
+        });
+
+      svg.current.selectAll(".top-area").data([data]).attr("d", topArea);
+      svg.current.selectAll(".bottom-area").data([data]).attr("d", bottomArea);
+      svg.current
+        .selectAll(`.text-${customKey}`)
+        .data(data)
+        .text((d) => parseInt(d.actual))
+        .attr("x", (d) => x(d.idx * xAdjust) - 7)
+        .attr("y", "20")
+        .attr("fill", (d) => {
+          if (d.idx === 0 || d.idx === data.length - 2) {
+            return "transparent";
+          }
+
+          return "gray";
+        });
+    }
   });
 
   return (

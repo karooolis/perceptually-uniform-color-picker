@@ -1,6 +1,7 @@
 // @flow
-const _ = require("lodash");
-const convertColors = require("color-space");
+import { useMemo } from "react";
+import _ from "lodash";
+import convertColors from "color-space";
 
 export const whitepoint = [100, 100, 100];
 
@@ -117,4 +118,35 @@ export const findHueBoundaries = (color) => {
     min,
     max,
   };
+};
+
+export const getGraphData = (colors, colorIdx) => {
+  // TODO: handle row and col selection
+  const graphColors = colors[colorIdx.row];
+  const data = _.map(graphColors, (color, idx) => {
+    const { color: rgb, impossible } = lchToRgb(color); // xyzToRgb(xyz);
+    const { max, min } = findChromaBoundaries(color);
+
+    return {
+      idx: parseInt(idx, 10) + 0.5,
+      bottom: min,
+      top: max,
+      actual: color[1],
+      color,
+    };
+  });
+
+  // TODO: perhaps there is a better way to handle line
+  // trail-offs than adding these extra hidden points
+  return [
+    {
+      ...data[0],
+      idx: 0,
+    },
+    ...data,
+    {
+      ...data[data.length - 1],
+      idx: data.length,
+    },
+  ];
 };
