@@ -4,9 +4,9 @@ import _ from "lodash";
 import spaces from "color-space";
 
 // set the dimensions and margins of the graph
-var margin = { top: 10, right: 10, bottom: 20, left: 20 },
-  width = 360 - margin.left - margin.right,
-  height = 130 - margin.top - margin.bottom;
+const margin = { top: 10, right: 10, bottom: 20, left: 20 };
+const width = 360 - margin.left - margin.right;
+const height = 130 - margin.top - margin.bottom;
 
 class GraphHue extends Component {
   componentDidMount() {
@@ -95,12 +95,12 @@ class GraphHue extends Component {
       .attr("width", width + margin.left + margin.right)
       .attr("height", height + margin.top + margin.bottom)
       .append("g")
-      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+      .attr("transform", `translate(${margin.left},${margin.top})`);
 
     this.x.domain([0, this.props.data.length - 1]);
     this.y.domain([0, 360]);
 
-    const data = this.props.data; // this.getData();
+    const { data } = this.props; // this.getData();
 
     // top area
     this.svg
@@ -165,7 +165,7 @@ class GraphHue extends Component {
   }
 
   refresh = () => {
-    var data = this.props.data; // this.getData();
+    const { data } = this.props; // this.getData();
 
     d3.select(`#svg-${this.props.customKey} .area1`)
       // .transition(50)

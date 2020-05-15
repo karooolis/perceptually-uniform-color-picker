@@ -1,13 +1,10 @@
 // @flow
-import React, { useMemo, useCallback, useRef, useEffect } from "react";
+import React, { useMemo, useRef, useEffect } from "react";
 import * as d3 from "d3";
-import _ from "lodash";
-import { getData, strokeToFill } from "gradient-path";
-import spaces from "color-space";
 import { hslCssStr } from "../utils";
 import { usePrevious } from "../hooks";
-import { findChromaBoundaries, lchToRgb, getGraphData } from "./utils";
-import type { ColorIdx, Colors } from ".";
+import { getGraphData } from "./utils";
+import type { ColorIdx, Colors } from "..";
 
 // set the dimensions and margins of the graph
 
@@ -70,7 +67,7 @@ const GraphLCH = ({ customKey, title, colorIdx, colors, row }: Props) => {
       bottomArea,
       valuesLine,
     };
-  }, [customKey]);
+  }, []);
 
   useEffect(() => {
     const { x, y, topArea, bottomArea, valuesLine } = elements;
@@ -207,7 +204,7 @@ const GraphLCH = ({ customKey, title, colorIdx, colors, row }: Props) => {
       svg.current
         .selectAll(`.text-${customKey}`)
         .data(data)
-        .text((d) => parseInt(d.actual))
+        .text((d) => parseInt(d.actual, 10))
         .attr("x", (d) => x(d.idx * xAdjust) - 7)
         .attr("y", "20")
         .attr("fill", (d) => {
