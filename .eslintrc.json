@@ -26,6 +26,7 @@
   "plugins": ["react", "prettier", "flowtype", "react-hooks"],
   "rules": {
     "prettier/prettier": "error",
-    "react/jsx-filename-extension": "off"
+    "react/jsx-filename-extension": "off",
+    "no-plusplus": "off"
   }
 }
