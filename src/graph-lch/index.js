@@ -5,9 +5,9 @@ import { hslCssStr } from "../utils";
 import { usePrevious } from "../hooks";
 import { getGraphData } from "./utils";
 import type { ColorIdx, Colors } from "..";
+import type { GraphType } from "./consts";
 
 // set the dimensions and margins of the graph
-
 const xAxisHeight = 30;
 const margin = {
   top: 0,
@@ -26,14 +26,16 @@ type Props = {|
   title: string,
   colorIdx: ColorIdx,
   colors: Colors,
+  type: GraphType,
   row: boolean,
 |};
 
-const GraphLCH = ({ customKey, title, colorIdx, colors, row }: Props) => {
+const GraphLCH = ({ customKey, title, colorIdx, colors, type, row }: Props) => {
   const graphInitialized = useRef(false);
-  const data = useMemo(() => getGraphData(colors, colorIdx), [
+  const data = useMemo(() => getGraphData(colors, colorIdx, type), [
     colors,
     colorIdx,
+    type,
   ]);
   const prevData = usePrevious(data);
   const svg = useRef();

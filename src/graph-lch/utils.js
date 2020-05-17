@@ -1,6 +1,9 @@
 // @flow
 import _ from "lodash";
 import spaces from "color-space";
+import { LUMINANCE, CHROMA, HUE } from "./consts";
+import type { Color, ColorIdx, Colors } from "..";
+import type { GraphType } from "./consts";
 
 const whitepoint = {
   // 1931 2°
@@ -120,22 +123,16 @@ export const lchToRgb = (lch) => {
   };
 };
 
-// Color must be in LCHab
-// TODO: Need to test if it really works properly
-const findChromaBoundaries = (color) => {
+/**
+ * Find chroma boundaries which are possible for a given
+ * color's luminance and hue.
+ * @param {*} color - color in LCHab color mode
+ */
+const findChromaBoundaries = (color: Color) => {
   const [luminance, , hue] = color;
-  let min = 0;
   let max = 100;
 
   for (let chroma = 0; chroma <= max; chroma++) {
-    const newColor = [luminance, chroma, hue];
-    if (!isColorImpossible(newColor)) {
-      min = chroma;
-      break;
-    }
-  }
-
-  for (let chroma = min; chroma <= max; chroma++) {
     const newColor = [luminance, chroma, hue];
     if (isColorImpossible(newColor)) {
       max = chroma;
@@ -144,7 +141,7 @@ const findChromaBoundaries = (color) => {
   }
 
   return {
-    min,
+    min: 0, // chroma can't get below 0
     max,
   };
 };
@@ -193,14 +190,23 @@ export const findHueBoundaries = (color) => {
 };
 
 // Currently, this calclulates data for chroma graph. Need to abstract away to handle all primaries.
-export const getGraphData = (colors, colorIdx) => {
+export const getGraphData = (
+  colors: Colors,
+  colorIdx: ColorIdx,
+  type: GraphType
+) => {
   // TODO: handle both row and col selection
   const graphColors = colors[colorIdx.row];
+  const colorBoundariesFn = {
+    [LUMINANCE]: findLuminanceBoundaries,
+    [CHROMA]: findChromaBoundaries,
+    [HUE]: findHueBoundaries,
+  };
 
   const data = _.map(graphColors, (color, idx) => {
     const lchColor = spaces.hsl.lchab(color);
     // const { color: rgb, impossible } = hslToRgb(color);
-    const { max, min } = findChromaBoundaries(lchColor);
+    const { max, min } = colorBoundariesFn[type](lchColor);
 
     return {
       idx: parseInt(idx, 10) + 0.5,

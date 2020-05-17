@@ -7,6 +7,7 @@ import { Client as Styletron } from "styletron-engine-atomic";
 import ColorSquareBig from "./color-square-big";
 import "./styles.css";
 import { DEFAULT_COLORS } from "./consts";
+import { LUMINANCE, CHROMA, HUE } from "./graph-lch/consts";
 import GraphLCH from "./graph-lch/index";
 import ColorPicker from "./color-picker";
 
@@ -67,11 +68,22 @@ const App = () => {
       </div>
 
       <ColorPicker color={color} colorIdx={colorIdx} setColor={setColor} />
+
       <GraphLCH
-        title="test"
-        customKey="test"
+        title="Luminance (lightness)"
+        customKey="luminnace-shades"
         colorIdx={colorIdx}
         colors={colors}
+        type={LUMINANCE}
+        row
+      />
+
+      <GraphLCH
+        title="Chroma (saturation)"
+        customKey="chroma-shades"
+        colorIdx={colorIdx}
+        colors={colors}
+        type={CHROMA}
         row
       />
     </>
